@@ -54,7 +54,7 @@ def generate_car_image(speed, aesthetics, reliability, efficiency, tech):
     prompt = f"A futuristic car with speed {speed}/10, aesthetics {aesthetics}/10, reliability {reliability}/10, fuel efficiency {efficiency}/10, and technology {tech}/10. The car should have a sleek design with a bold, eye-catching color scheme."
     
     data = {
-        "model": "image-alpha-001",
+        
         "prompt": prompt,
         "size": "1024x1024",
         "n": 1
@@ -96,4 +96,4 @@ if st.sidebar.button("Simulate Market"):
     if car_image_url and "Error" not in car_image_url:
         st.image(car_image_url, caption="Your Designed Car", use_column_width=True)
     else:
-        st.write("Failed to generate AI image. Try againC later.")
+        st.write("Failed to generate AI image. Try again later.")
