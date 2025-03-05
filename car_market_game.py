@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import requests
 import os
+import time
 
 # Simulated market data
 market_data = pd.DataFrame({
@@ -50,10 +51,10 @@ def generate_car_image(speed, aesthetics, reliability, efficiency, tech):
         "Content-Type": "application/json"
     }
     
-    prompt = f"A car with speed rating {speed}/10, aesthetics {aesthetics}/10, reliability {reliability}/10, fuel efficiency {efficiency}/10, and technology {tech}/10. The car should have a sleek design with a futuristic look and bold, eye-catching color options."
+    prompt = f"A futuristic car with speed {speed}/10, aesthetics {aesthetics}/10, reliability {reliability}/10, fuel efficiency {efficiency}/10, and technology {tech}/10. The car should have a sleek design with a bold, eye-catching color scheme."
     
     data = {
-        "version": "stable-diffusion-v1-4",
+        "version": "latest",
         "input": {"prompt": prompt}
     }
     
@@ -63,8 +64,19 @@ def generate_car_image(speed, aesthetics, reliability, efficiency, tech):
     
     if response.status_code == 200:
         prediction = response.json()
-        image_url = prediction.get("output", [None])[0]
-        return image_url if image_url else "Error: No images found."
+        prediction_id = prediction.get("id")
+        
+        # Polling until image is ready
+        while True:
+            poll_response = requests.get(f"https://api.replicate.com/v1/predictions/{prediction_id}", headers=headers)
+            poll_result = poll_response.json()
+            
+            if poll_result.get("status") == "succeeded":
+                return poll_result["output"][0]  # Return the generated image URL
+            elif poll_result.get("status") == "failed":
+                return "Error: Image generation failed."
+            
+            time.sleep(2)  # Wait before polling again
     else:
         return f"Error: {response.status_code} - {response.text}"
 
