@@ -36,35 +36,28 @@ def simulate_market_performance(speed, aesthetics, reliability, efficiency, tech
         "Profit": profit
     }
 
-# AI image generation function (DALL·E API)
+# AI image generation function using DeepAI API
 def generate_car_image(speed, aesthetics, reliability, efficiency, tech):
-    openai_api_key = os.getenv("OPENAI_API_KEY")
+    deepai_api_key = os.getenv("DEEPAI_API_KEY")
     
-    if not openai_api_key:
+    if not deepai_api_key:
         return "Error: No API Key found."
     
-    st.write(f"🔍 Loaded API Key: {openai_api_key[:5]}**********")
+    st.write(f"🔍 Loaded API Key: {deepai_api_key[:5]}**********")
     
     headers = {
-        "Authorization": f"Bearer {openai_api_key}",
-        "Content-Type": "application/json"
+        "Authorization": f"Bearer {deepai_api_key}"
     }
     
     prompt = f"A car with speed rating {speed}/10, aesthetics {aesthetics}/10, reliability {reliability}/10, fuel efficiency {efficiency}/10, and technology {tech}/10. The car should have a sleek design with a futuristic look and bold, eye-catching color options."
     
-    data = {
-        "prompt": prompt,
-        "size": "1024x1024",
-        "n": 1
-    }
-    
-    response = requests.post("https://api.openai.com/v1/images/generations", json=data, headers=headers)
+    response = requests.post("https://api.deepai.org/api/text2img", data={"text": prompt}, headers=headers)
     
     st.write(f"🔍 API Response Status: {response.status_code}")
     st.write(f"🔍 API Response Text: {response.text}")
     
     if response.status_code == 200:
-        return response.json()["data"][0]["url"]
+        return response.json()["output_url"]
     else:
         return f"Error: {response.status_code} - {response.text}"
 
@@ -94,4 +87,4 @@ if st.sidebar.button("Simulate Market"):
     if car_image_url and "Error" not in car_image_url:
         st.image(car_image_url, caption="Your Designed Car", use_column_width=True)
     else:
-        st.write("Failed to generate AI image. Check your APIs key.")
+        st.write("Failed to generate AI image. Check your APIa key.")
