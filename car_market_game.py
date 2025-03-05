@@ -37,52 +37,36 @@ def simulate_market_performance(speed, aesthetics, reliability, efficiency, tech
         "Profit": profit
     }
 
-# AI image generation function using Replicate API (Stable Diffusion)
+# AI image generation function using OpenAI DALL·E
 def generate_car_image(speed, aesthetics, reliability, efficiency, tech):
-    replicate_api_key = os.getenv("REPLICATE_API_KEY")
+    openai_api_key = os.getenv("OPENAI_API_KEY")
     
-    if not replicate_api_key:
+    if not openai_api_key:
         return "Error: No API Key found."
     
-    st.write(f"🔍 Loaded API Key: {replicate_api_key[:5]}**********")
+    st.write(f"🔍 Loaded API Key: {openai_api_key[:5]}**********")
     
     headers = {
-        "Authorization": f"Token {replicate_api_key}",
+        "Authorization": f"Bearer {openai_api_key}",
         "Content-Type": "application/json"
     }
     
     prompt = f"A futuristic car with speed {speed}/10, aesthetics {aesthetics}/10, reliability {reliability}/10, fuel efficiency {efficiency}/10, and technology {tech}/10. The car should have a sleek design with a bold, eye-catching color scheme."
     
     data = {
-        "version": "stability-ai/stable-diffusion",
-        "input": {
-            "prompt": prompt,
-            "width": 512,
-            "height": 512,
-            "num_outputs": 1
-        }
+        "model": "image-alpha-001",
+        "prompt": prompt,
+        "size": "1024x1024",
+        "n": 1
     }
     
-    response = requests.post("https://api.replicate.com/v1/predictions", json=data, headers=headers)
+    response = requests.post("https://api.openai.com/v1/images/generations", json=data, headers=headers)
     
     st.write(f"🔍 API Response Status: {response.status_code}")
     st.write(f"🔍 API Response Text: {response.text}")
     
     if response.status_code == 200:
-        prediction = response.json()
-        prediction_id = prediction.get("id")
-        
-        # Polling until image is ready
-        while True:
-            poll_response = requests.get(f"https://api.replicate.com/v1/predictions/{prediction_id}", headers=headers)
-            poll_result = poll_response.json()
-            
-            if poll_result.get("status") == "succeeded":
-                return poll_result["output"][0]  # Return the generated image URL
-            elif poll_result.get("status") == "failed":
-                return "Error: Image generation failed."
-            
-            time.sleep(2)  # Wait before polling again
+        return response.json()["data"][0]["url"]
     else:
         return f"Error: {response.status_code} - {response.text}"
 
@@ -112,4 +96,4 @@ if st.sidebar.button("Simulate Market"):
     if car_image_url and "Error" not in car_image_url:
         st.image(car_image_url, caption="Your Designed Car", use_column_width=True)
     else:
-        st.write("Failed to generate AI image. Try again later.")
+        st.write("Failed to generate AI image. Try againC later.")
