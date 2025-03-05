@@ -36,20 +36,35 @@ def simulate_market_performance(speed, aesthetics, reliability, efficiency, tech
         "Profit": profit
     }
 
-# AI image generation function using Lexica API
+# AI image generation function using Replicate API (Stable Diffusion)
 def generate_car_image(speed, aesthetics, reliability, efficiency, tech):
+    replicate_api_key = os.getenv("REPLICATE_API_KEY")
+    
+    if not replicate_api_key:
+        return "Error: No API Key found."
+    
+    st.write(f"🔍 Loaded API Key: {replicate_api_key[:5]}**********")
+    
+    headers = {
+        "Authorization": f"Token {replicate_api_key}",
+        "Content-Type": "application/json"
+    }
+    
     prompt = f"A car with speed rating {speed}/10, aesthetics {aesthetics}/10, reliability {reliability}/10, fuel efficiency {efficiency}/10, and technology {tech}/10. The car should have a sleek design with a futuristic look and bold, eye-catching color options."
     
-    response = requests.get(f"https://lexica.art/api/v1/search?q={prompt}")
+    data = {
+        "version": "stable-diffusion-v1-4",
+        "input": {"prompt": prompt}
+    }
+    
+    response = requests.post("https://api.replicate.com/v1/predictions", json=data, headers=headers)
     
     st.write(f"🔍 API Response Status: {response.status_code}")
     
     if response.status_code == 200:
-        images = response.json().get("images", [])
-        if images:
-            return images[0]["src"]  # Get the first image result
-        else:
-            return "Error: No images found."
+        prediction = response.json()
+        image_url = prediction.get("output", [None])[0]
+        return image_url if image_url else "Error: No images found."
     else:
         return f"Error: {response.status_code} - {response.text}"
 
