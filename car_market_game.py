@@ -106,4 +106,4 @@ if st.sidebar.button("Simulate Market"):
     if car_image_url and "Error" not in car_image_url:
         st.image(car_image_url, caption="Your Designed Car", use_column_width=True)
     else:
-        st.write("Failed to generate AI image. Try again later.")
+        st.write("Failed to generate AI image. Try againS later.")
