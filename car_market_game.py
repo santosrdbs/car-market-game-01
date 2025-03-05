@@ -54,7 +54,7 @@ def generate_car_image(speed, aesthetics, reliability, efficiency, tech):
     prompt = f"A futuristic car with speed {speed}/10, aesthetics {aesthetics}/10, reliability {reliability}/10, fuel efficiency {efficiency}/10, and technology {tech}/10. The car should have a sleek design with a bold, eye-catching color scheme."
     
     data = {
-        "version": "stability-ai/stable-diffusion",
+        "version": "replicate/stable-diffusion",
         "input": {
             "prompt": prompt,
             "width": 512,
