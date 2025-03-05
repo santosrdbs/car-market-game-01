@@ -37,7 +37,7 @@ def simulate_market_performance(speed, aesthetics, reliability, efficiency, tech
         "Profit": profit
     }
 
-# AI image generation function using Replicate API (Stable Diffusion 2.1)
+# AI image generation function using Replicate API (Stable Diffusion)
 def generate_car_image(speed, aesthetics, reliability, efficiency, tech):
     replicate_api_key = os.getenv("REPLICATE_API_KEY")
     
@@ -54,7 +54,7 @@ def generate_car_image(speed, aesthetics, reliability, efficiency, tech):
     prompt = f"A futuristic car with speed {speed}/10, aesthetics {aesthetics}/10, reliability {reliability}/10, fuel efficiency {efficiency}/10, and technology {tech}/10. The car should have a sleek design with a bold, eye-catching color scheme."
     
     data = {
-        "version": "stability-ai/stable-diffusion-2-1",
+        "version": "stability-ai/stable-diffusion",
         "input": {
             "prompt": prompt,
             "width": 512,
@@ -66,6 +66,7 @@ def generate_car_image(speed, aesthetics, reliability, efficiency, tech):
     response = requests.post("https://api.replicate.com/v1/predictions", json=data, headers=headers)
     
     st.write(f"🔍 API Response Status: {response.status_code}")
+    st.write(f"🔍 API Response Text: {response.text}")
     
     if response.status_code == 200:
         prediction = response.json()
