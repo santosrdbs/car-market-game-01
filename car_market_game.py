@@ -1,6 +1,9 @@
 import streamlit as st
 import pandas as pd
 import requests
+import os
+openai_api_key = os.getenv("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")
+
 
 # Simulated market data
 market_data = pd.DataFrame({
