@@ -46,7 +46,7 @@ def generate_car_image(speed, aesthetics, reliability, efficiency, tech):
     st.write(f"🔍 Loaded API Key: {deepai_api_key[:5]}**********")
     
     headers = {
-        "Authorization": f"Bearer {deepai_api_key}"
+        "Api-Key": deepai_api_key
     }
     
     prompt = f"A car with speed rating {speed}/10, aesthetics {aesthetics}/10, reliability {reliability}/10, fuel efficiency {efficiency}/10, and technology {tech}/10. The car should have a sleek design with a futuristic look and bold, eye-catching color options."
@@ -87,4 +87,4 @@ if st.sidebar.button("Simulate Market"):
     if car_image_url and "Error" not in car_image_url:
         st.image(car_image_url, caption="Your Designed Car", use_column_width=True)
     else:
-        st.write("Failed to generate AI image. Check your APIa key.")
+        st.write("Failed to generate AI image. Check your API key.")
