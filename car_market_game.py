@@ -54,8 +54,8 @@ def generate_car_image(speed, aesthetics, reliability, efficiency, tech):
     prompt = f"A futuristic car with speed {speed}/10, aesthetics {aesthetics}/10, reliability {reliability}/10, fuel efficiency {efficiency}/10, and technology {tech}/10. The car should have a sleek design with a bold, eye-catching color scheme."
     
     data = {
-        "version": "latest",
-        "input": {"prompt": prompt}
+        "version": "stability-ai/stable-diffusion",
+        "input": {"prompt": prompt, "width": 512, "height": 512, "num_outputs": 1}
     }
     
     response = requests.post("https://api.replicate.com/v1/predictions", json=data, headers=headers)
@@ -106,4 +106,4 @@ if st.sidebar.button("Simulate Market"):
     if car_image_url and "Error" not in car_image_url:
         st.image(car_image_url, caption="Your Designed Car", use_column_width=True)
     else:
-        st.write("Failed to generate AI image. Try againS later.")
+        st.write("Failed to generate AI image. Try againb later.")
