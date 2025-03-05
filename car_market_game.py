@@ -36,28 +36,20 @@ def simulate_market_performance(speed, aesthetics, reliability, efficiency, tech
         "Profit": profit
     }
 
-# AI image generation function using DeepAI API
+# AI image generation function using Lexica API
 def generate_car_image(speed, aesthetics, reliability, efficiency, tech):
-    deepai_api_key = os.getenv("DEEPAI_API_KEY")
-    
-    if not deepai_api_key:
-        return "Error: No API Key found."
-    
-    st.write(f"🔍 Loaded API Key: {deepai_api_key[:5]}**********")
-    
-    headers = {
-        "Api-Key": deepai_api_key
-    }
-    
     prompt = f"A car with speed rating {speed}/10, aesthetics {aesthetics}/10, reliability {reliability}/10, fuel efficiency {efficiency}/10, and technology {tech}/10. The car should have a sleek design with a futuristic look and bold, eye-catching color options."
     
-    response = requests.post("https://api.deepai.org/api/text2img", data={"text": prompt}, headers=headers)
+    response = requests.get(f"https://lexica.art/api/v1/search?q={prompt}")
     
     st.write(f"🔍 API Response Status: {response.status_code}")
-    st.write(f"🔍 API Response Text: {response.text}")
     
     if response.status_code == 200:
-        return response.json()["output_url"]
+        images = response.json().get("images", [])
+        if images:
+            return images[0]["src"]  # Get the first image result
+        else:
+            return "Error: No images found."
     else:
         return f"Error: {response.status_code} - {response.text}"
 
@@ -87,4 +79,4 @@ if st.sidebar.button("Simulate Market"):
     if car_image_url and "Error" not in car_image_url:
         st.image(car_image_url, caption="Your Designed Car", use_column_width=True)
     else:
-        st.write("Failed to generate AI image. Check your API key.")
+        st.write("Failed to generate AI image. Try again later.")
