@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import requests
 import os
-openai_api_key = os.getenv("OPENAI_API_KEY")
 
 # Simulated market data
 market_data = pd.DataFrame({
@@ -39,16 +38,30 @@ def simulate_market_performance(speed, aesthetics, reliability, efficiency, tech
 
 # AI image generation function (DALL·E API)
 def generate_car_image(speed, aesthetics, reliability, efficiency, tech):
-    prompt = f"A car with speed rating {speed}/10, aesthetics {aesthetics}/10, reliability {reliability}/10, fuel efficiency {efficiency}/10, and technology {tech}/10. The car should have a sleek design with a futuristic look and bold, eye-catching color options."
-    dalle_api_url = "https://api.openai.com/v1/images/generations"  # Replace with actual API if using OpenAI
-    headers = {"Authorization": "Bearer YOUR_OPENAI_API_KEY"}  # Add your OpenAI key here
+    openai_api_key = os.getenv("OPENAI_API_KEY")
     
-    response = requests.post(dalle_api_url, json={"prompt": prompt, "size": "1024x1024"}, headers=headers)
+    if not openai_api_key:
+        return "Error: No API Key found."
+    
+    headers = {
+        "Authorization": f"Bearer {openai_api_key}",
+        "Content-Type": "application/json"
+    }
+    
+    prompt = f"A car with speed rating {speed}/10, aesthetics {aesthetics}/10, reliability {reliability}/10, fuel efficiency {efficiency}/10, and technology {tech}/10. The car should have a sleek design with a futuristic look and bold, eye-catching color options."
+    
+    data = {
+        "prompt": prompt,
+        "size": "1024x1024",
+        "n": 1
+    }
+    
+    response = requests.post("https://api.openai.com/v1/images/generations", json=data, headers=headers)
     
     if response.status_code == 200:
         return response.json()["data"][0]["url"]
     else:
-        return None
+        return f"Error: {response.status_code} - {response.text}"
 
 # Streamlit UI
 st.title("🚗 Car Market Simulation Game")
@@ -73,7 +86,7 @@ if st.sidebar.button("Simulate Market"):
     # Generate AI image
     st.subheader("🎨 AI-Generated Car Image")
     car_image_url = generate_car_image(speed, aesthetics, reliability, efficiency, tech)
-    if car_image_url:
+    if car_image_url and "Error" not in car_image_url:
         st.image(car_image_url, caption="Your Designed Car", use_column_width=True)
     else:
         st.write("Failed to generate AI image. Check your API key.")
