@@ -65,7 +65,7 @@ def generate_car_image(speed, aesthetics, reliability, efficiency, tech, price):
     data = {
         
         "prompt": prompt,
-        "size": "1024x1792",
+        "size": "1024x1792" if "1024x1792" in ["1024x1024", "1024x1792", "1792x1024"] else "1024x1024",
         "n": 1
     }
     
