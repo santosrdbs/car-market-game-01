@@ -232,7 +232,7 @@ try:
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         try:
-            st.image(logo_path, width=150, use_column_width=True)
+            st.image(logo_path, width=150, use_container_width=True)
         except:
             pass  # Skip if logo doesn't load
 except:
@@ -478,7 +478,7 @@ elif st.session_state.game_state == "result_3":
     # Display car image if available
     if st.session_state.car_image_url and "Error" not in st.session_state.car_image_url:
         try:
-            st.image(st.session_state.car_image_url, use_column_width=True)
+            st.image(st.session_state.car_image_url, use_container_width=True)
             st.markdown("<p style='text-align: center; font-style: italic;'>Your final car design</p>", unsafe_allow_html=True)
         except:
             st.write("Unable to display car image")
@@ -558,7 +558,7 @@ elif st.session_state.game_state == "summary":
     # Display car image again if available
     if st.session_state.car_image_url and "Error" not in st.session_state.car_image_url:
         try:
-            st.image(st.session_state.car_image_url, use_column_width=True)
+            st.image(st.session_state.car_image_url, use_container_width=True)
             st.markdown("<p style='text-align: center; font-style: italic;'>Your final car design</p>", unsafe_allow_html=True)
         except:
             pass
