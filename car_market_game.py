@@ -157,11 +157,10 @@ if st.sidebar.button("Simulate Market"):
     </div>
     """, unsafe_allow_html=True)
 
-    if 'car_image_url' in locals():
-        st.image(car_image_url, use_container_width=True)
+    if 'car_image_url' in locals() and 'result' in locals():
     st.image(car_image_url, use_container_width=True)
 
-if st.button("Impose Trump Tariff"):
+if 'result' in locals() and st.button("Impose Trump Tariff"):
         tariffed_cost = (speed * 2000) + (aesthetics * 1500) + (reliability * 1800) + (efficiency * 1700) + (tech * 2500)
         tariffed_cost *= 1.25  # Adding 25% tariff
         tariffed_profit = result['Estimated Sales'] * (price - tariffed_cost)
