@@ -32,6 +32,14 @@ def simulate_market_performance(speed, aesthetics, reliability, efficiency, tech
     cost = (speed * 2000) + (aesthetics * 1500) + (reliability * 1800) + (efficiency * 1700) + (tech * 2500)
     profit = estimated_sales * (price - cost)
     
+    feedback = ""
+    if profit < 0:
+        feedback = "Your car is losing money. Consider increasing the price or reducing costs by adjusting features like speed, aesthetics, or technology."
+    elif profit < 50000:
+        feedback = "Your profit is low. Try optimizing your price or enhancing the car’s appeal to boost sales."
+    else:
+        feedback = "Your car is profitable! Maintain a balance between cost and market demand for even better results."
+    
     return {
         "Best Market Segment": best_match["Segment"],
         "Estimated Sales": estimated_sales,
@@ -52,12 +60,12 @@ def generate_car_image(speed, aesthetics, reliability, efficiency, tech, price):
         "Content-Type": "application/json"
     }
     
-    prompt = f"A {'luxury' if price > 60000 else 'budget' if price < 25000 else 'mid-range'} futuristic car priced at ${price}, with speed {speed}/10, aesthetics {aesthetics}/10, reliability {reliability}/10, fuel efficiency {efficiency}/10, and technology {tech}/10. The car should match its price range and have a sleek, realistic design with appropriate features. The background should be a cityscape, giving a modern and urban feel to the image."
+    prompt = f"A {'luxury' if price > 60000 else 'budget' if price < 25000 else 'mid-range'} futuristic full-body car priced at ${price}, with speed {speed}/10, aesthetics {aesthetics}/10, reliability {reliability}/10, fuel efficiency {efficiency}/10, and technology {tech}/10. The car should match its price range, appearing as a sedan for budget, an SUV for mid-range, and a sleek sports car for luxury. The background should be a futuristic cityscape with lighting that matches the car's style."
     
     data = {
         
         "prompt": prompt,
-        "size": "1024x1024",
+        "size": "1024x1792",
         "n": 1
     }
     
@@ -100,6 +108,7 @@ if st.sidebar.button("Simulate Market"):
         st.markdown(f"""**📊 Market Simulation Results**  
 - **Best Market Segment:** {result['Best Market Segment']}  
 - **Estimated Sales:** {result['Estimated Sales']} units  
-- **Estimated Profit:** ${result['Profit']:,}""")
+- **Estimated Profit:** ${result['Profit']:,}  
+- **💡 Profit Feedback:** {feedback}""")
     else:
         st.write("Failed to generate AI image. Try again later.")
