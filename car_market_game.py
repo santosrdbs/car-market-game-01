@@ -33,8 +33,18 @@ def simulate_market_performance(speed, aesthetics, reliability, efficiency, tech
     profit = estimated_sales * (price - cost)
     
     feedback = ""
-    if profit < 0:
+    if profit < -10000000:
+        feedback = "🚨 Catastrophic Loss! Your car is losing an extreme amount of money. You need to **completely rethink** your strategy—reduce production costs, increase the price, and make sure your car matches the right market segment."
+    elif profit < -1000000:
+        feedback = "⚠️ Huge Loss! Your losses are very high. Consider making significant adjustments—lowering expensive features, improving efficiency, or adjusting pricing to better fit the market."
+    elif profit < -100000:
+        feedback = "🚨 Major Loss! Your car is losing a significant amount of money. You need to make drastic changes—consider lowering production costs, increasing the price, or improving the balance of features to appeal to buyers."
+    elif profit < -50000:
+        feedback = "🔴 Moderate Loss! Your car is losing money. Try reducing unnecessary costs, adjusting the price, or making the car more appealing to its target market."
+    elif profit < 0:
         feedback = "Your car is losing money. Consider increasing the price or reducing costs by adjusting features like speed, aesthetics, or technology."
+    elif profit < 20000:
+        feedback = "⚠️ Low Profit! Your profit is minimal. Consider small adjustments to your price or features to make your car more appealing."
     elif profit < 50000:
         feedback = "Your profit is low. Try optimizing your price or enhancing the car’s appeal to boost sales."
     else:
