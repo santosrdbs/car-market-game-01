@@ -63,6 +63,7 @@ def generate_car_image(speed, aesthetics, reliability, efficiency, tech, price):
     prompt = f"A {'luxury' if price > 60000 else 'budget' if price < 25000 else 'mid-range'} futuristic full-body car priced at ${price}, with speed {speed}/10, aesthetics {aesthetics}/10, reliability {reliability}/10, fuel efficiency {efficiency}/10, and technology {tech}/10. The car should match its price range, appearing as a sedan for budget, an SUV for mid-range, and a sleek sports car for luxury. The background should be a futuristic cityscape with lighting that matches the car's style."
     
     data = {
+        "model": "dall-e-2",
         
         "prompt": prompt,
         "size": "1024x1792",
