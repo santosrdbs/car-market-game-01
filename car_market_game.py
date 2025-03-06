@@ -90,7 +90,8 @@ def generate_car_image(speed, aesthetics, reliability, efficiency, tech, price):
             "Content-Type": "application/json"
         }
         
-        prompt = f"A {'sports car' if price > 80000 else 'luxury sedan' if price > 60000 else 'mid-range SUV' if price > 25000 and efficiency < 8 else 'eco-friendly SUV' if price > 25000 and efficiency >= 8 else 'eco-friendly compact' if price > 20000 and efficiency >= 8 else 'budget hatchback'} with a {'plain and basic' if aesthetics <= 3 else 'sleek and stylish' if aesthetics <= 7 else 'wild and extravagant'} design and funky color palette. The car should match its market segment: a high-performance sports car for extreme speed, a refined luxury sedan for premium comfort, a mid-range SUV for versatility, an eco-friendly SUV for sustainable family travel, an eco-friendly compact for maximum efficiency, or a budget hatchback for affordability. The car should be driving on a winding mountain road. The image should be photorealistic and highly detailed. No text, watermarks, or symbols should appear anywhere in the image."
+        # Enhanced prompt to strongly prevent text in images
+        prompt = f"A {'sports car' if price > 80000 else 'luxury sedan' if price > 60000 else 'mid-range SUV' if price > 25000 and efficiency < 8 else 'eco-friendly SUV' if price > 25000 and efficiency >= 8 else 'eco-friendly compact' if price > 20000 and efficiency >= 8 else 'budget hatchback'} with a {'plain and basic' if aesthetics <= 3 else 'sleek and stylish' if aesthetics <= 7 else 'wild and extravagant'} design and funky color palette. The car should match its market segment: a high-performance sports car for extreme speed, a refined luxury sedan for premium comfort, a mid-range SUV for versatility, an eco-friendly SUV for sustainable family travel, an eco-friendly compact for maximum efficiency, or a budget hatchback for affordability. The car should be driving on a winding mountain road. The image should be photorealistic and highly detailed. VERY IMPORTANT: DO NOT INCLUDE ANY TEXT, LETTERS, NUMBERS, WORDS, LABELS, WATERMARKS, LOGOS, OR SYMBOLS OF ANY KIND IN THE IMAGE."
         
         data = {
             "model": "dall-e-3",
@@ -177,10 +178,15 @@ if 'result' not in st.session_state:
     st.session_state.result = None
 if 'car_image_url' not in st.session_state:
     st.session_state.car_image_url = None
+if 'tariff_applied' not in st.session_state:
+    st.session_state.tariff_applied = False
 
 # Simulate market button
 if st.sidebar.button("Simulate Market"):
     try:
+        # Reset tariff state when simulating new market
+        st.session_state.tariff_applied = False
+        
         sim_message = st.empty()
         progress_bar = st.progress(0)
         sim_message.write("🕒 Simulating...")
@@ -235,25 +241,9 @@ if st.session_state.result is not None:
             </div>
         </div>
         """, unsafe_allow_html=True)
-    except Exception as e:
-        st.error(f"Error displaying results: {str(e)}")
-
-# Custom button styling with simpler CSS
-st.markdown("""
-    <style>
-    .stButton > button {
-        background-color: #ff4d4d;
-        color: white;
-        font-weight: bold;
-        margin-top: 10px;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
-# Only show the tariff button if we have simulation results
-if st.session_state.result is not None:
-    if st.button("Impose Trump Tariff +25%"):
-        try:
+        
+        # Only display tariff information if tariff has been applied
+        if st.session_state.tariff_applied:
             tariffed_cost = st.session_state.result['Cost'] * 1.25  # Adding 25% tariff
             tariffed_profit = st.session_state.result['Estimated Sales'] * (price - tariffed_cost)
             tariffed_feedback = get_feedback_for_profit(tariffed_profit)
@@ -273,5 +263,23 @@ if st.session_state.result is not None:
                 </div>
             </div>
             """, unsafe_allow_html=True)
-        except Exception as e:
-            st.error(f"Error calculating tariff impact: {str(e)}")
+    except Exception as e:
+        st.error(f"Error displaying results: {str(e)}")
+
+# Custom button styling with simpler CSS
+st.markdown("""
+    <style>
+    .stButton > button {
+        background-color: #ff4d4d;
+        color: white;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# Only show the tariff button if we have simulation results and tariff has not been applied yet
+if st.session_state.result is not None and not st.session_state.tariff_applied:
+    if st.button("Impose Trump Tariff +25%"):
+        st.session_state.tariff_applied = True
+        st.experimental_rerun()
