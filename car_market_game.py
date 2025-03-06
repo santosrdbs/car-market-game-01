@@ -174,7 +174,7 @@ if st.sidebar.button("Simulate Market"):
         </style>
     """, unsafe_allow_html=True)
     
-        if 'result' in st.session_state and st.session_state['result'] is not None:
+    if 'result' in st.session_state and st.session_state['result'] is not None:
     
                 if 'result' in st.session_state and st.session_state['result'] is not None and st.button("Impose Trump Tariff +25%"):
                                         tariffed_cost = (speed * 2000) + (aesthetics * 1500) + (reliability * 1800) + (efficiency * 1700) + (tech * 2500)
