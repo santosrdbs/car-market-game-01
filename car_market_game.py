@@ -158,6 +158,7 @@ if st.sidebar.button("Simulate Market"):
     """, unsafe_allow_html=True)
 
     if 'car_image_url' in locals():
+        st.image(car_image_url, use_container_width=True)
     st.image(car_image_url, use_container_width=True)
 
 if st.button("Impose Trump Tariff"):
