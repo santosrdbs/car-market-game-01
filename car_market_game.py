@@ -153,14 +153,21 @@ if st.sidebar.button("Simulate Market"):
             <p>{result['Feedback']}</p>
         </div>
         <br>
-        <form action='' method='post'>
-            <input type='hidden' name='tariff' value='apply'>
-            <button type='submit' style='background-color: #f44336; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;'>Impose Trump Tariff</button>
-        </form>
+        
     </div>
     """, unsafe_allow_html=True)
 
     if st.button("Impose Trump Tariff"):
+        tariffed_cost = (speed * 2000) + (aesthetics * 1500) + (reliability * 1800) + (efficiency * 1700) + (tech * 2500)
+        tariffed_cost *= 1.25  # Adding 25% tariff
+        tariffed_profit = result['Estimated Sales'] * (price - tariffed_cost)
+        
+        st.markdown(f"""
+        <div style='border: 2px solid #FF5733; padding: 15px; border-radius: 10px; background-color: #fff3e0;'>
+            <h2 style='color: #FF5733;'>📊 Updated Market Results (After Tariff)</h2>
+            <p><strong>New Estimated Profit:</strong> ${tariffed_profit:,.2f}</p>
+        </div>
+        """, unsafe_allow_html=True)
         tariffed_cost = (speed * 2000) + (aesthetics * 1500) + (reliability * 1800) + (efficiency * 1700) + (tech * 2500)
         tariffed_cost *= 1.25  # Adding 25% tariff
         tariffed_profit = result['Estimated Sales'] * (price - tariffed_cost)
