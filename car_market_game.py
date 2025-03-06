@@ -61,7 +61,7 @@ def generate_car_image(speed, aesthetics, reliability, efficiency, tech, price):
         "Content-Type": "application/json"
     }
     
-    prompt = f"A {'luxury' if price > 60000 else 'budget' if price < 25000 else 'mid-range'} realistic car with a powerful, striking design. The body is sleek with high-tech surfaces that reflect light dynamically. It features an eye-catching, bold color scheme, with vibrant neon green, electric blue, or fiery red streaks accentuating its design. The car is designed to fit its price category: a sleek, low-profile sports coupe for luxury, a bold and dynamic SUV for mid-range, and a modern, practical sedan for budget. It is driving on a scenic mountain road, winding through breathtaking landscapes with dramatic lighting and a sense of movement. The image should be cinematic and hyper-realistic, with intricate reflections on the car's surface, realistic lighting effects, and a vivid environment. No text or words should appear anywhere in the image."
+    prompt = f"A {'luxury' if price > 60000 else 'budget' if price < 25000 else 'mid-range'} car with a modern design and funky color palette. The car is designed to fit its price category: a sports car for luxury, an SUV for mid-range, and a small basic car for budget. The car should be driving on a winding mountain road. No text should appear on the image."
     
     data = {
         "model": "dall-e-3",
@@ -82,7 +82,7 @@ def generate_car_image(speed, aesthetics, reliability, efficiency, tech, price):
         return f"Error: {response.status_code} - {response.text}"
 
 # Streamlit UI
-st.set_page_config(page_title="Business Administration Car Market Simulation Game", layout="wide")
+st.set_page_config(page_title="Business Administration Car Market Simulation Game", layout="centered")
 
 # Add logo in the top-left with spacing
 logo_path = "logo.png"  # Replace with the actual logo file path
@@ -101,7 +101,11 @@ price = st.sidebar.number_input("Price ($)", min_value=10000, max_value=200000, 
 
 if st.sidebar.button("Simulate Market"):
     sim_message = st.empty()
+    progress_bar = st.progress(0)
     sim_message.write("🕒 Simulating...")
+    for percent in range(1, 101, 5):
+        time.sleep(0.1)  # Simulate progress delay
+        progress_bar.progress(percent)
     
     result = simulate_market_performance(speed, aesthetics, reliability, efficiency, tech, price)
     
@@ -110,6 +114,7 @@ if st.sidebar.button("Simulate Market"):
     # Generate AI image
     
     car_image_url = generate_car_image(speed, aesthetics, reliability, efficiency, tech, price)
+    progress_bar.empty()
     sim_message.empty()  # Clear 'Simulating' message
     if car_image_url and "Error" not in car_image_url:
         st.image(car_image_url, use_container_width=True)
