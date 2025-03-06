@@ -126,6 +126,9 @@ st.markdown("""
         background-color: #ffffff;
         color: #000000;
         margin-bottom: 20px;
+        max-width: 900px;
+        margin-left: auto;
+        margin-right: auto;
     }
     .custom-container-tariff {
         border: 2px solid #FF5733;
@@ -134,6 +137,9 @@ st.markdown("""
         background-color: #fff3e0;
         color: #000000;
         margin-bottom: 20px;
+        max-width: 900px;
+        margin-left: auto;
+        margin-right: auto;
     }
     .section-divider {
         border-top: 1px solid #ccc;
@@ -153,6 +159,9 @@ st.markdown("""
         background-color: #e8f4f8;
         color: #000000;
         margin-bottom: 20px;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
     }
     .attempt-counter {
         font-weight: bold;
@@ -163,6 +172,9 @@ st.markdown("""
         padding: 10px;
         background-color: #e8f4f8;
         border-radius: 5px;
+        max-width: 900px;
+        margin-left: auto;
+        margin-right: auto;
     }
     .prev-attempt {
         font-size: 14px;
@@ -170,6 +182,17 @@ st.markdown("""
         background-color: #f0f0f0;
         border-radius: 5px;
         margin-bottom: 10px;
+    }
+    .centered-header {
+        text-align: center;
+        max-width: 900px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .centered-container {
+        max-width: 900px;
+        margin-left: auto;
+        margin-right: auto;
     }
     /* Button colors */
     .stButton button {
@@ -217,14 +240,14 @@ def reset_game():
     st.session_state.car_designs = []
 
 # Logo and header - using simpler layout for mobile
-st.markdown("<h1 style='text-align: center;'>Business Administration Car Market Simulation Game</h1>", unsafe_allow_html=True)
+st.markdown("<h1 class='centered-header'>Business Administration Car Market Simulation Game</h1>", unsafe_allow_html=True)
 
 try:
     logo_path = "logo.png"  # Replace with the actual logo file path
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
+    col1, col2, col3 = st.columns([1, 3, 1])
+    with col1:
         try:
-            st.image(logo_path, width=150, use_container_width=True)
+            st.image(logo_path, width=100)
         except:
             pass  # Skip if logo doesn't load
 except:
@@ -415,7 +438,7 @@ elif st.session_state.game_state == "playing" or st.session_state.game_state == 
                 
                 # Best design callout
                 st.markdown(f"""
-                <div style="background-color: #e8f4f8; padding: 15px; border-radius: 10px; border: 2px solid #3498db; margin-bottom: 20px;">
+                <div style="background-color: #e8f4f8; padding: 15px; border-radius: 10px; border: 2px solid #3498db; margin-bottom: 20px; max-width: 900px; margin-left: auto; margin-right: auto;">
                     <h3 style="color: #3498db; text-align: center;">🏆 Best Performing Design: Attempt {best_attempt_index+1}</h3>
                     <p><strong>Profit:</strong> ${best_attempt['Profit']:,}</p>
                     <p><strong>Market Segment:</strong> {best_attempt['Best Market Segment']}</p>
