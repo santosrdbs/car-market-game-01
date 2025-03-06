@@ -141,6 +141,7 @@ if st.sidebar.button("Simulate Market"):
     progress_bar.empty()
     sim_message.empty()  # Clear 'Simulating' message
     if car_image_url and "Error" not in car_image_url:
+    st.image(car_image_url, use_container_width=True)
         
         st.markdown(f"""
     <div style='border: 2px solid #4CAF50; padding: 15px; border-radius: 10px; background-color: #ffffff; color: #000000;'>
@@ -161,7 +162,27 @@ if st.sidebar.button("Simulate Market"):
     
 
 if 'result' in locals() and 'Profit' in result:
-    if st.button("Impose Trump Tariff"):
+    st.markdown("""
+        <style>
+            .stButton>button {
+                display: block;
+                margin-top: 10px;
+            }
+        </style>
+    """, unsafe_allow_html=True)
+    if 'result' in locals() and 'Profit' in result:
+    st.markdown("""
+        <style>
+            .stButton>button {
+                background-color: #ff4d4d;
+                color: white;
+                border-radius: 5px;
+                padding: 10px 15px;
+                font-weight: bold;
+            }
+        </style>
+    """, unsafe_allow_html=True)
+    if st.button("Impose Trump Tariff +25%"):
         tariffed_cost = (speed * 2000) + (aesthetics * 1500) + (reliability * 1800) + (efficiency * 1700) + (tech * 2500)
         tariffed_cost *= 1.25  # Adding 25% tariff
         tariffed_profit = result['Estimated Sales'] * (price - tariffed_cost)
