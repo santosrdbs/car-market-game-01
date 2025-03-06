@@ -394,36 +394,24 @@ elif st.session_state.game_state == "playing" or st.session_state.game_state == 
                 <h2 style="text-align: center; margin-top: 20px;">Game Summary</h2>
                 """, unsafe_allow_html=True)
                 
-                # Create a table for all attempts
-                summary_rows = ""
+                # Create a table for all attempts using Streamlit components instead of HTML
+                st.markdown("### Attempts Summary")
+                
+                # Create a DataFrame for the summary
+                import pandas as pd
+                summary_data = []
                 for i, attempt in enumerate(st.session_state.attempts_results):
                     is_best = i == best_attempt_index
-                    row_style = "background-color: #e8f4f8; font-weight: bold;" if is_best else ""
                     best_badge = "🏆 " if is_best else ""
-                    summary_rows += f"""
-                    <tr style="{row_style}">
-                        <td>{best_badge}Attempt {i+1}</td>
-                        <td>{attempt['Best Market Segment']}</td>
-                        <td>{attempt['Estimated Sales']}</td>
-                        <td>${attempt['Profit']:,}</td>
-                    </tr>
-                    """
+                    summary_data.append({
+                        "Attempt": f"{best_badge}Attempt {i+1}",
+                        "Market Segment": attempt['Best Market Segment'],
+                        "Sales": attempt['Estimated Sales'],
+                        "Profit": f"${attempt['Profit']:,}"
+                    })
                 
-                st.markdown(f"""
-                <table style="width:100%; border-collapse: collapse; margin-top: 20px;">
-                    <thead>
-                        <tr style="background-color: #3498db; color: white;">
-                            <th style="padding: 8px; text-align: left;">Attempt</th>
-                            <th style="padding: 8px; text-align: left;">Market Segment</th>
-                            <th style="padding: 8px; text-align: left;">Sales</th>
-                            <th style="padding: 8px; text-align: left;">Profit</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {summary_rows}
-                    </tbody>
-                </table>
-                """, unsafe_allow_html=True)
+                summary_df = pd.DataFrame(summary_data)
+                st.dataframe(summary_df, use_container_width=True)
                 
                 # New game button - using Streamlit's native button
                 
@@ -433,8 +421,9 @@ elif st.session_state.game_state == "playing" or st.session_state.game_state == 
         except Exception as e:
             st.error(f"Error displaying results: {str(e)}")
 
-    # Only show the tariff button if we have simulation results and tariff has not been applied yet
-    if st.session_state.result is not None and not st.session_state.tariff_applied:
+    # Only show the tariff button if we have simulation results, tariff has not been applied yet,
+    # and we're in the game_over state (after 3rd attempt)
+    if st.session_state.result is not None and not st.session_state.tariff_applied and st.session_state.game_state == "game_over":
         if st.button("Impose Trump Tariff +25%"):
             st.session_state.tariff_applied = True
             st.rerun()
