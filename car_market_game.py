@@ -69,7 +69,7 @@ def generate_car_image(speed, aesthetics, reliability, efficiency, tech, price):
         "n": 1
     }
     
-    response = requests.post("https://api.openai.com/v1/images/generations", json={"model": "dall-e-2", **data}, headers=headers)
+    response = requests.post("https://api.openai.com/v1/images/generations", json=data, headers=headers)
     
     
     
