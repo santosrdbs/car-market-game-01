@@ -282,4 +282,4 @@ st.markdown("""
 if st.session_state.result is not None and not st.session_state.tariff_applied:
     if st.button("Impose Trump Tariff +25%"):
         st.session_state.tariff_applied = True
-        st.experimental_rerun()
+        st.rerun()
