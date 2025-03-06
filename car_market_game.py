@@ -38,7 +38,7 @@ def simulate_market_performance(speed, aesthetics, reliability, efficiency, tech
     }
 
 # AI image generation function using OpenAI DALL·E
-def generate_car_image(speed, aesthetics, reliability, efficiency, tech):
+def generate_car_image(speed, aesthetics, reliability, efficiency, tech, price):
     openai_api_key = os.getenv("OPENAI_API_KEY")
     
     if not openai_api_key:
@@ -51,7 +51,7 @@ def generate_car_image(speed, aesthetics, reliability, efficiency, tech):
         "Content-Type": "application/json"
     }
     
-    prompt = f"A futuristic car with speed {speed}/10, aesthetics {aesthetics}/10, reliability {reliability}/10, fuel efficiency {efficiency}/10, and technology {tech}/10. The car should have a sleek design with a bold, eye-catching color scheme."
+    prompt = f"A {'luxury' if price > 60000 else 'budget' if price < 25000 else 'mid-range'} futuristic car priced at ${price}, with speed {speed}/10, aesthetics {aesthetics}/10, reliability {reliability}/10, fuel efficiency {efficiency}/10, and technology {tech}/10. The car should match its price range and have a sleek, realistic design with appropriate features."
     
     data = {
         
@@ -60,7 +60,7 @@ def generate_car_image(speed, aesthetics, reliability, efficiency, tech):
         "n": 1
     }
     
-    response = requests.post("https://api.openai.com/v1/images/generations", json=data, headers=headers)
+    response = requests.post("https://api.openai.com/v1/images/generations", json={"model": "dall-e-2", **data}, headers=headers)
     
     
     
