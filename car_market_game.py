@@ -247,26 +247,12 @@ if st.session_state.game_state == "instructions":
         </ol>
         <p style="text-align: center; font-weight: bold;">Good luck with your car design!</p>
     </div>
-    <div class="center-button">
-        <button class="blue-button" onclick="window.streamlitFuncs.startGame()">Start Game</button>
-    </div>
     """, unsafe_allow_html=True)
     
-    # JavaScript to call the Python function
-    st.markdown("""
-    <script>
-    window.streamlitFuncs = {
-        startGame: function() {
-            window.parent.postMessage({type: 'streamlit:setComponentValue', value: 'start_game'}, '*');
-        }
-    }
-    </script>
-    """, unsafe_allow_html=True)
-    
-    # Python function to change game state when JavaScript calls it
+    # Simple Streamlit button instead of custom HTML/JS button
     if st.button("Start Game", key="start_game_button", help="Click to start the game"):
         st.session_state.game_state = "playing"
-        st.experimental_rerun()
+        st.rerun()  # Using st.rerun() instead of experimental_rerun()
 
 # Playing the game
 elif st.session_state.game_state == "playing" or st.session_state.game_state == "game_over":
@@ -439,25 +425,11 @@ elif st.session_state.game_state == "playing" or st.session_state.game_state == 
                 </table>
                 """, unsafe_allow_html=True)
                 
-                # New game button
-                st.markdown("""
-                <div class="center-button">
-                    <button class="green-button" onclick="window.resetGameFunc()">New Game</button>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                # JavaScript to call Python reset function
-                st.markdown("""
-                <script>
-                window.resetGameFunc = function() {
-                    window.parent.postMessage({type: 'streamlit:setComponentValue', value: 'reset_game'}, '*');
-                }
-                </script>
-                """, unsafe_allow_html=True)
+                # New game button - using Streamlit's native button
                 
                 if st.button("New Game", key="new_game_button"):
                     reset_game()
-                    st.experimental_rerun()
+                    st.rerun()
         except Exception as e:
             st.error(f"Error displaying results: {str(e)}")
 
@@ -465,4 +437,4 @@ elif st.session_state.game_state == "playing" or st.session_state.game_state == 
     if st.session_state.result is not None and not st.session_state.tariff_applied:
         if st.button("Impose Trump Tariff +25%"):
             st.session_state.tariff_applied = True
-            st.experimental_rerun()
+            st.rerun()
