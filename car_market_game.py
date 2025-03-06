@@ -61,7 +61,7 @@ def generate_car_image(speed, aesthetics, reliability, efficiency, tech, price):
         "Content-Type": "application/json"
     }
     
-    prompt = f"A {'luxury' if price > 60000 else 'budget' if price < 25000 else 'mid-range'} car with a modern design and funky color palette. The car is designed to fit its price category: a sports car for luxury, an SUV for mid-range, and a small basic car for budget. The car should be driving on a winding mountain road. No text should appear on the image."
+    prompt = f"A {'sports car' if price > 80000 else 'luxury sedan' if price > 60000 else 'mid-range SUV' if price > 25000 else 'eco-friendly compact' if price > 20000 else 'budget hatchback'} with a modern design and funky color palette. The car should match its market segment: a high-performance sports car for extreme speed, a refined luxury sedan for premium comfort, a mid-range SUV for versatility, an eco-friendly compact for maximum efficiency, or a budget hatchback for affordability. The car should be driving on a winding mountain road. No text should appear on the image."
     
     data = {
         "model": "dall-e-3",
@@ -85,9 +85,7 @@ def generate_car_image(speed, aesthetics, reliability, efficiency, tech, price):
 st.set_page_config(page_title="Business Administration Car Market Simulation Game", layout="centered", initial_sidebar_state="expanded")
 st.markdown("""
     <style>
-    body, .stApp {
-        background-color: white !important;
-    }
+    
 </style>
 """, unsafe_allow_html=True)
 
@@ -104,7 +102,7 @@ with col2:
 
 
 # Sidebar Inputs
-st.sidebar.header("🔧 Customize Your Car (Expand ▶)")
+st.sidebar.header("Customize Your Car")
 speed = st.sidebar.slider("Speed", 1, 10, 5)
 aesthetics = st.sidebar.slider("Aesthetics", 1, 10, 5)
 reliability = st.sidebar.slider("Reliability", 1, 10, 5)
