@@ -80,7 +80,13 @@ def generate_car_image(speed, aesthetics, reliability, efficiency, tech, price):
         return f"Error: {response.status_code} - {response.text}"
 
 # Streamlit UI
-st.title("🚗 Car Market Simulation Game")
+st.set_page_config(page_title="Business Administration Car Market Simulation Game", layout="wide")
+
+# Add logo in the top-left with spacing
+logo_path = "logo.png"  # Replace with the actual logo file path
+st.image(logo_path, width=150)
+
+st.title("🚗 Business Administration Car Market Simulation Game")
 
 # Sidebar Inputs
 st.sidebar.header("Customize Your Car")
@@ -100,7 +106,7 @@ if st.sidebar.button("Simulate Market"):
     
     
     # Generate AI image
-    st.subheader("🎨 AI-Generated Car Image")
+    
     car_image_url = generate_car_image(speed, aesthetics, reliability, efficiency, tech, price)
     sim_message.empty()  # Clear 'Simulating' message
     if car_image_url and "Error" not in car_image_url:
