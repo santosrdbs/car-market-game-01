@@ -44,7 +44,7 @@ def generate_car_image(speed, aesthetics, reliability, efficiency, tech):
     if not openai_api_key:
         return "Error: No API Key found."
     
-    st.write(f"🔍 Loaded API Key: {openai_api_key[:5]}**********")
+    
     
     headers = {
         "Authorization": f"Bearer {openai_api_key}",
@@ -94,6 +94,6 @@ if st.sidebar.button("Simulate Market"):
     st.subheader("🎨 AI-Generated Car Image")
     car_image_url = generate_car_image(speed, aesthetics, reliability, efficiency, tech)
     if car_image_url and "Error" not in car_image_url:
-        st.image(car_image_url, caption="Your Designed Car", use_column_width=True)
+        st.image(car_image_url, caption="Your Designed Car", use_container_width=True)
     else:
         st.write("Failed to generate AI image. Try again later.")
