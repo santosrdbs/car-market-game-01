@@ -83,6 +83,7 @@ tech = st.sidebar.slider("Technology", 1, 10, 5)
 price = st.sidebar.number_input("Price ($)", min_value=10000, max_value=200000, value=30000, step=1000)
 
 if st.sidebar.button("Simulate Market"):
+    st.write("🕒 Simulating...")
     result = simulate_market_performance(speed, aesthetics, reliability, efficiency, tech, price)
     
     st.subheader("📊 Market Simulation Results")
@@ -93,7 +94,8 @@ if st.sidebar.button("Simulate Market"):
     # Generate AI image
     st.subheader("🎨 AI-Generated Car Image")
     car_image_url = generate_car_image(speed, aesthetics, reliability, efficiency, tech, price)
+    st.empty()  # Clear 'Simulating' message
     if car_image_url and "Error" not in car_image_url:
-        st.image(car_image_url, caption="Your Designed Car", use_container_width=True)
+        st.image(car_image_url, caption=f"🚗 {result['Best Market Segment']} Car | Sales: {result['Estimated Sales']} | Profit: ${result['Profit']:,}", use_container_width=True)
     else:
         st.write("Failed to generate AI image. Try again later.")
