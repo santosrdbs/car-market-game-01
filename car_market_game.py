@@ -142,10 +142,17 @@ if st.sidebar.button("Simulate Market"):
     sim_message.empty()  # Clear 'Simulating' message
     if car_image_url and "Error" not in car_image_url:
         st.image(car_image_url, use_container_width=True)
-        st.markdown(f"""**📊 Market Simulation Results**  
-- **Best Market Segment:** {result['Best Market Segment']}  
-- **Estimated Sales:** {result['Estimated Sales']} units  
-- **Estimated Profit:** ${result['Profit']:,}  
-- **💡 Profit Feedback:** {result['Feedback']}""")
+        st.markdown(f"""
+    <div style='border: 2px solid #4CAF50; padding: 15px; border-radius: 10px; background-color: #f9f9f9;'>
+        <h2 style='color: #4CAF50;'>📊 Market Simulation Results</h2>
+        <p><strong>Best Market Segment:</strong> {result['Best Market Segment']}</p>
+        <p><strong>Estimated Sales:</strong> {result['Estimated Sales']} units</p>
+        <p><strong>Estimated Profit:</strong> ${result['Profit']:,}</p>
+        <div style='border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px;'>
+            <h3 style='color: #FF5733;'>💡 Profit Feedback</h3>
+            <p>{result['Feedback']}</p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
     else:
         st.write("Failed to generate AI image. Try again later.")
