@@ -143,7 +143,7 @@ if st.sidebar.button("Simulate Market"):
     if car_image_url and "Error" not in car_image_url:
         st.image(car_image_url, use_container_width=True)
         st.markdown(f"""
-    <div style='border: 2px solid #4CAF50; padding: 15px; border-radius: 10px; background-color: #f9f9f9;'>
+    <div style='border: 2px solid #4CAF50; padding: 15px; border-radius: 10px; background-color: #ffffff; color: #000000;'>
         <h2 style='color: #4CAF50;'>📊 Market Simulation Results</h2>
         <p><strong>Best Market Segment:</strong> {result['Best Market Segment']}</p>
         <p><strong>Estimated Sales:</strong> {result['Estimated Sales']} units</p>
@@ -157,8 +157,13 @@ if st.sidebar.button("Simulate Market"):
     </div>
     """, unsafe_allow_html=True)
 
-    if st.button("Impose Trump Tariff"):
+    if 'car_image_url' in locals():
+    st.image(car_image_url, use_container_width=True)
+
+if st.button("Impose Trump Tariff"):
         tariffed_cost = (speed * 2000) + (aesthetics * 1500) + (reliability * 1800) + (efficiency * 1700) + (tech * 2500)
+        tariffed_cost *= 1.25  # Adding 25% tariff
+        tariffed_profit = result['Estimated Sales'] * (price - tariffed_cost)
         tariffed_cost *= 1.25  # Adding 25% tariff
         tariffed_profit = result['Estimated Sales'] * (price - tariffed_cost)
         
@@ -177,5 +182,4 @@ if st.sidebar.button("Simulate Market"):
             <p><strong>New Estimated Profit:</strong> ${tariffed_profit:,.2f}</p>
         </div>
         """, unsafe_allow_html=True)
-    else:
-        st.write("Failed to generate AI image. Try again later.")
+    
