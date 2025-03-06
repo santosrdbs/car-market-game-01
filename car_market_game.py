@@ -41,6 +41,7 @@ def simulate_market_performance(speed, aesthetics, reliability, efficiency, tech
         feedback = "Your car is profitable! Maintain a balance between cost and market demand for even better results."
     
     return {
+        "Feedback": feedback,
         "Best Market Segment": best_match["Segment"],
         "Estimated Sales": estimated_sales,
         "Profit": profit
@@ -116,6 +117,6 @@ if st.sidebar.button("Simulate Market"):
 - **Best Market Segment:** {result['Best Market Segment']}  
 - **Estimated Sales:** {result['Estimated Sales']} units  
 - **Estimated Profit:** ${result['Profit']:,}  
-- **💡 Profit Feedback:** {feedback}""")
+- **💡 Profit Feedback:** {result['Feedback']}""")
     else:
         st.write("Failed to generate AI image. Try again later.")
