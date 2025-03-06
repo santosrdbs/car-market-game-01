@@ -66,7 +66,7 @@ def generate_car_image(speed, aesthetics, reliability, efficiency, tech, price):
         "model": "dall-e-2",
         
         "prompt": prompt,
-        "size": "1024x1792",
+        "size": "1024x1024",
         "n": 1
     }
     
