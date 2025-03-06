@@ -85,10 +85,10 @@ def generate_car_image(speed, aesthetics, reliability, efficiency, tech, price):
 st.set_page_config(page_title="Business Administration Car Market Simulation Game", layout="centered", initial_sidebar_state="expanded")
 st.markdown("""
     <style>
-        body {
-            background-color: white !important;
-        }
-    </style>
+    body, .stApp {
+        background-color: white !important;
+    }
+</style>
 """, unsafe_allow_html=True)
 
 # Add logo in the top-left with spacing
@@ -104,7 +104,7 @@ with col2:
 
 
 # Sidebar Inputs
-st.sidebar.header("Customize Your Car")
+st.sidebar.header("🔧 Customize Your Car (Expand ▶)")
 speed = st.sidebar.slider("Speed", 1, 10, 5)
 aesthetics = st.sidebar.slider("Aesthetics", 1, 10, 5)
 reliability = st.sidebar.slider("Reliability", 1, 10, 5)
@@ -116,8 +116,8 @@ if st.sidebar.button("Simulate Market"):
     sim_message = st.empty()
     progress_bar = st.progress(0)
     sim_message.write("🕒 Simulating...")
-    for percent in range(1, 101, 5):
-        time.sleep(0.1)  # Simulate progress delay
+    for percent in range(1, 95, 5):
+        time.sleep(0.05)  # Simulate progress delay
         progress_bar.progress(percent)
     
     result = simulate_market_performance(speed, aesthetics, reliability, efficiency, tech, price)
@@ -127,6 +127,9 @@ if st.sidebar.button("Simulate Market"):
     # Generate AI image
     
     car_image_url = generate_car_image(speed, aesthetics, reliability, efficiency, tech, price)
+    for percent in range(95, 101, 1):
+        time.sleep(0.2)
+        progress_bar.progress(percent)
     progress_bar.empty()
     sim_message.empty()  # Clear 'Simulating' message
     if car_image_url and "Error" not in car_image_url:
