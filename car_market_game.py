@@ -146,8 +146,73 @@ st.markdown("""
     .header-orange {
         color: #FF5733;
     }
+    .instructions-container {
+        border: 2px solid #3498db;
+        padding: 20px;
+        border-radius: 10px;
+        background-color: #e8f4f8;
+        color: #000000;
+        margin-bottom: 20px;
+    }
+    .center-button {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+    .attempt-counter {
+        font-weight: bold;
+        color: #3498db;
+        font-size: 18px;
+        text-align: center;
+        margin: 10px 0;
+    }
+    .stButton > button.blue-button {
+        background-color: #3498db;
+        color: white;
+        font-weight: bold;
+        padding: 10px 20px;
+        border-radius: 5px;
+        border: none;
+    }
+    .stButton > button.red-button {
+        background-color: #ff4d4d;
+        color: white;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+    .stButton > button.green-button {
+        background-color: #4CAF50;
+        color: white;
+        font-weight: bold;
+        padding: 10px 24px;
+        border-radius: 5px;
+        border: none;
+    }
     </style>
 """, unsafe_allow_html=True)
+
+# Initialize session state
+if 'game_state' not in st.session_state:
+    st.session_state.game_state = "instructions"  # States: instructions, playing, game_over
+if 'result' not in st.session_state:
+    st.session_state.result = None
+if 'car_image_url' not in st.session_state:
+    st.session_state.car_image_url = None
+if 'tariff_applied' not in st.session_state:
+    st.session_state.tariff_applied = False
+if 'attempts_used' not in st.session_state:
+    st.session_state.attempts_used = 0
+if 'attempts_results' not in st.session_state:
+    st.session_state.attempts_results = []
+
+# Function to reset the game
+def reset_game():
+    st.session_state.game_state = "instructions"
+    st.session_state.result = None
+    st.session_state.car_image_url = None
+    st.session_state.tariff_applied = False
+    st.session_state.attempts_used = 0
+    st.session_state.attempts_results = []
 
 # Logo and header - using simpler layout
 try:
@@ -164,122 +229,240 @@ except Exception as e:
     # Fallback if columns cause issues
     st.title("Business Administration Car Market Simulation Game")
 
-# Sidebar Inputs
-st.sidebar.header("Customize Your Car")
-speed = st.sidebar.slider("Speed", 1, 10, 5)
-aesthetics = st.sidebar.slider("Aesthetics", 1, 10, 5)
-reliability = st.sidebar.slider("Reliability", 1, 10, 5)
-efficiency = st.sidebar.slider("Fuel Efficiency", 1, 10, 5)
-tech = st.sidebar.slider("Technology", 1, 10, 5)
-price = st.sidebar.number_input("Price ($)", min_value=10000, max_value=200000, value=30000, step=1000)
+# Instructions screen
+if st.session_state.game_state == "instructions":
+    st.markdown("""
+    <div class="instructions-container">
+        <h2 style="color: #3498db; text-align: center;">Welcome to the Car Market Simulator!</h2>
+        <hr>
+        <h3>Game Instructions:</h3>
+        <ol>
+            <li><strong>Objective:</strong> Design a profitable car by adjusting its features and price.</li>
+            <li><strong>You have 3 attempts</strong> to create a profitable car design.</li>
+            <li>Use the sliders in the sidebar to customize your car's specifications.</li>
+            <li>Click "Simulate Market" to see how your car performs.</li>
+            <li>Learn from each attempt and adjust your strategy.</li>
+            <li>After your third attempt, you'll see an AI-generated image of your final car design.</li>
+            <li>The "Impose Trump Tariff" button lets you see how a 25% tariff would affect your profits.</li>
+        </ol>
+        <p style="text-align: center; font-weight: bold;">Good luck with your car design!</p>
+    </div>
+    <div class="center-button">
+        <button class="blue-button" onclick="window.streamlitFuncs.startGame()">Start Game</button>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # JavaScript to call the Python function
+    st.markdown("""
+    <script>
+    window.streamlitFuncs = {
+        startGame: function() {
+            window.parent.postMessage({type: 'streamlit:setComponentValue', value: 'start_game'}, '*');
+        }
+    }
+    </script>
+    """, unsafe_allow_html=True)
+    
+    # Python function to change game state when JavaScript calls it
+    if st.button("Start Game", key="start_game_button", help="Click to start the game"):
+        st.session_state.game_state = "playing"
+        st.experimental_rerun()
 
-# Initialize session state
-if 'result' not in st.session_state:
-    st.session_state.result = None
-if 'car_image_url' not in st.session_state:
-    st.session_state.car_image_url = None
-if 'tariff_applied' not in st.session_state:
-    st.session_state.tariff_applied = False
+# Playing the game
+elif st.session_state.game_state == "playing" or st.session_state.game_state == "game_over":
+    # Sidebar Inputs (only enabled during playing state)
+    st.sidebar.header("Customize Your Car")
+    disabled = st.session_state.game_state == "game_over"
+    
+    # Display attempt counter
+    st.sidebar.markdown(f"""
+    <div class="attempt-counter">
+        Attempt {st.session_state.attempts_used + 1} of 3
+    </div>
+    """, unsafe_allow_html=True)
+    
+    speed = st.sidebar.slider("Speed", 1, 10, 5, disabled=disabled)
+    aesthetics = st.sidebar.slider("Aesthetics", 1, 10, 5, disabled=disabled)
+    reliability = st.sidebar.slider("Reliability", 1, 10, 5, disabled=disabled)
+    efficiency = st.sidebar.slider("Fuel Efficiency", 1, 10, 5, disabled=disabled)
+    tech = st.sidebar.slider("Technology", 1, 10, 5, disabled=disabled)
+    price = st.sidebar.number_input("Price ($)", min_value=10000, max_value=200000, value=30000, step=1000, disabled=disabled)
 
-# Simulate market button
-if st.sidebar.button("Simulate Market"):
-    try:
-        # Reset tariff state when simulating new market
-        st.session_state.tariff_applied = False
-        
-        sim_message = st.empty()
-        progress_bar = st.progress(0)
-        sim_message.write("🕒 Simulating...")
-        
-        # More robust progress bar
+    # Previous attempts summary
+    if len(st.session_state.attempts_results) > 0:
+        st.sidebar.markdown("---")
+        st.sidebar.markdown("### Previous Attempts")
+        for i, result in enumerate(st.session_state.attempts_results):
+            st.sidebar.markdown(f"**Attempt {i+1}**: ${result['Profit']:,} profit")
+    
+    # Simulate market button (only show when in playing state)
+    if st.session_state.game_state == "playing" and st.sidebar.button("Simulate Market"):
         try:
-            for percent in range(1, 95, 5):
-                time.sleep(0.05)  # Simulate progress delay
-                progress_bar.progress(percent)
-        except:
-            pass  # Continue if progress bar fails
-        
-        # Store result in session state
-        st.session_state.result = simulate_market_performance(speed, aesthetics, reliability, efficiency, tech, price)
-        
-        # Generate AI image
-        st.session_state.car_image_url = generate_car_image(speed, aesthetics, reliability, efficiency, tech, price)
-        
-        try:
-            for percent in range(95, 101, 1):
-                time.sleep(0.1)  # Reduced delay time
-                progress_bar.progress(percent)
-            progress_bar.empty()
-        except:
-            pass  # Continue if progress bar fails
-        
-        sim_message.empty()  # Clear 'Simulating' message
-    except Exception as e:
-        st.error(f"An error occurred during simulation: {str(e)}")
-
-# Display results if we have them
-if st.session_state.result is not None:
-    try:
-        # Display car image if available
-        if st.session_state.car_image_url and "Error" not in st.session_state.car_image_url:
-            try:
-                st.image(st.session_state.car_image_url, use_container_width=True)
-            except:
-                st.write("Unable to display car image")
-        
-        # Display results using plain HTML/markdown to avoid JavaScript issues
-        result = st.session_state.result
-        st.markdown(f"""
-        <div class="custom-container">
-            <h2 class="header-green">📊 Market Simulation Results</h2>
-            <p><strong>Best Market Segment:</strong> {result['Best Market Segment']}</p>
-            <p><strong>Estimated Sales:</strong> {result['Estimated Sales']} units</p>
-            <p><strong>Estimated Profit:</strong> ${result['Profit']:,}</p>
-            <div class="section-divider">
-                <h3 class="header-orange">💡 Profit Feedback</h3>
-                <p>{result['Feedback']}</p>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        # Only display tariff information if tariff has been applied
-        if st.session_state.tariff_applied:
-            tariffed_cost = st.session_state.result['Cost'] * 1.25  # Adding 25% tariff
-            tariffed_profit = st.session_state.result['Estimated Sales'] * (price - tariffed_cost)
-            tariffed_feedback = get_feedback_for_profit(tariffed_profit)
+            # Reset tariff state when simulating new market
+            st.session_state.tariff_applied = False
             
-            # Display tariff results with plain HTML to avoid JavaScript issues
+            sim_message = st.empty()
+            progress_bar = st.progress(0)
+            sim_message.write("🕒 Simulating...")
+            
+            # More robust progress bar
+            try:
+                for percent in range(1, 95, 5):
+                    time.sleep(0.05)  # Simulate progress delay
+                    progress_bar.progress(percent)
+            except:
+                pass  # Continue if progress bar fails
+            
+            # Store result in session state
+            st.session_state.result = simulate_market_performance(speed, aesthetics, reliability, efficiency, tech, price)
+            
+            # Store this attempt in history
+            st.session_state.attempts_results.append(st.session_state.result)
+            
+            # Increment attempts counter
+            st.session_state.attempts_used += 1
+            
+            # Generate AI image only on the final attempt
+            if st.session_state.attempts_used >= 3:
+                st.session_state.car_image_url = generate_car_image(speed, aesthetics, reliability, efficiency, tech, price)
+                st.session_state.game_state = "game_over"
+            
+            try:
+                for percent in range(95, 101, 1):
+                    time.sleep(0.1)  # Reduced delay time
+                    progress_bar.progress(percent)
+                progress_bar.empty()
+            except:
+                pass  # Continue if progress bar fails
+            
+            sim_message.empty()  # Clear 'Simulating' message
+        except Exception as e:
+            st.error(f"An error occurred during simulation: {str(e)}")
+    
+    # Display results if we have them
+    if st.session_state.result is not None:
+        try:
+            # Display car image only if final attempt and we have an image
+            if st.session_state.game_state == "game_over" and st.session_state.car_image_url and "Error" not in st.session_state.car_image_url:
+                try:
+                    st.image(st.session_state.car_image_url, use_container_width=True)
+                except:
+                    st.write("Unable to display car image")
+            
+            # Display results using plain HTML/markdown to avoid JavaScript issues
+            result = st.session_state.result
+            
+            # Show attempts left or final status
+            if st.session_state.game_state == "playing":
+                attempts_left = 3 - st.session_state.attempts_used
+                status_text = f"<div class='attempt-counter'>You have {attempts_left} attempt{'s' if attempts_left != 1 else ''} left</div>"
+            else:
+                status_text = "<div class='attempt-counter'>Final Result</div>"
+            
+            st.markdown(status_text, unsafe_allow_html=True)
+            
             st.markdown(f"""
-            <div class="custom-container-tariff">
-                <h2 class="header-orange">📊 Updated Market Results (After Tariff)</h2>
-                <p><strong>Best Market Segment:</strong> {st.session_state.result['Best Market Segment']}</p>
-                <p><strong>Estimated Sales:</strong> {st.session_state.result['Estimated Sales']} units</p>
-                <p><strong>Original Profit:</strong> ${st.session_state.result['Profit']:,}</p>
-                <p><strong>New Estimated Profit:</strong> ${tariffed_profit:,.2f}</p>
-                <p><strong>Profit Change:</strong> ${tariffed_profit - st.session_state.result['Profit']:,.2f}</p>
+            <div class="custom-container">
+                <h2 class="header-green">📊 Market Simulation Results</h2>
+                <p><strong>Best Market Segment:</strong> {result['Best Market Segment']}</p>
+                <p><strong>Estimated Sales:</strong> {result['Estimated Sales']} units</p>
+                <p><strong>Estimated Profit:</strong> ${result['Profit']:,}</p>
                 <div class="section-divider">
-                    <h3 class="header-orange">💡 Updated Profit Feedback</h3>
-                    <p>{tariffed_feedback}</p>
+                    <h3 class="header-orange">💡 Profit Feedback</h3>
+                    <p>{result['Feedback']}</p>
                 </div>
             </div>
             """, unsafe_allow_html=True)
-    except Exception as e:
-        st.error(f"Error displaying results: {str(e)}")
+            
+            # Only display tariff information if tariff has been applied
+            if st.session_state.tariff_applied:
+                tariffed_cost = st.session_state.result['Cost'] * 1.25  # Adding 25% tariff
+                tariffed_profit = st.session_state.result['Estimated Sales'] * (price - tariffed_cost)
+                tariffed_feedback = get_feedback_for_profit(tariffed_profit)
+                
+                # Display tariff results with plain HTML to avoid JavaScript issues
+                st.markdown(f"""
+                <div class="custom-container-tariff">
+                    <h2 class="header-orange">📊 Updated Market Results (After Tariff)</h2>
+                    <p><strong>Best Market Segment:</strong> {st.session_state.result['Best Market Segment']}</p>
+                    <p><strong>Estimated Sales:</strong> {st.session_state.result['Estimated Sales']} units</p>
+                    <p><strong>Original Profit:</strong> ${st.session_state.result['Profit']:,}</p>
+                    <p><strong>New Estimated Profit:</strong> ${tariffed_profit:,.2f}</p>
+                    <p><strong>Profit Change:</strong> ${tariffed_profit - st.session_state.result['Profit']:,.2f}</p>
+                    <div class="section-divider">
+                        <h3 class="header-orange">💡 Updated Profit Feedback</h3>
+                        <p>{tariffed_feedback}</p>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+                
+            # Game over summary
+            if st.session_state.game_state == "game_over":
+                # Calculate best attempt
+                profits = [result['Profit'] for result in st.session_state.attempts_results]
+                best_attempt_index = profits.index(max(profits))
+                best_attempt = st.session_state.attempts_results[best_attempt_index]
+                
+                st.markdown("""
+                <div class="section-divider"></div>
+                <h2 style="text-align: center; margin-top: 20px;">Game Summary</h2>
+                """, unsafe_allow_html=True)
+                
+                # Create a table for all attempts
+                summary_rows = ""
+                for i, attempt in enumerate(st.session_state.attempts_results):
+                    is_best = i == best_attempt_index
+                    row_style = "background-color: #e8f4f8; font-weight: bold;" if is_best else ""
+                    best_badge = "🏆 " if is_best else ""
+                    summary_rows += f"""
+                    <tr style="{row_style}">
+                        <td>{best_badge}Attempt {i+1}</td>
+                        <td>{attempt['Best Market Segment']}</td>
+                        <td>{attempt['Estimated Sales']}</td>
+                        <td>${attempt['Profit']:,}</td>
+                    </tr>
+                    """
+                
+                st.markdown(f"""
+                <table style="width:100%; border-collapse: collapse; margin-top: 20px;">
+                    <thead>
+                        <tr style="background-color: #3498db; color: white;">
+                            <th style="padding: 8px; text-align: left;">Attempt</th>
+                            <th style="padding: 8px; text-align: left;">Market Segment</th>
+                            <th style="padding: 8px; text-align: left;">Sales</th>
+                            <th style="padding: 8px; text-align: left;">Profit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {summary_rows}
+                    </tbody>
+                </table>
+                """, unsafe_allow_html=True)
+                
+                # New game button
+                st.markdown("""
+                <div class="center-button">
+                    <button class="green-button" onclick="window.resetGameFunc()">New Game</button>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                # JavaScript to call Python reset function
+                st.markdown("""
+                <script>
+                window.resetGameFunc = function() {
+                    window.parent.postMessage({type: 'streamlit:setComponentValue', value: 'reset_game'}, '*');
+                }
+                </script>
+                """, unsafe_allow_html=True)
+                
+                if st.button("New Game", key="new_game_button"):
+                    reset_game()
+                    st.experimental_rerun()
+        except Exception as e:
+            st.error(f"Error displaying results: {str(e)}")
 
-# Custom button styling with simpler CSS
-st.markdown("""
-    <style>
-    .stButton > button {
-        background-color: #ff4d4d;
-        color: white;
-        font-weight: bold;
-        margin-top: 10px;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
-# Only show the tariff button if we have simulation results and tariff has not been applied yet
-if st.session_state.result is not None and not st.session_state.tariff_applied:
-    if st.button("Impose Trump Tariff +25%"):
-        st.session_state.tariff_applied = True
-        st.rerun()
+    # Only show the tariff button if we have simulation results and tariff has not been applied yet
+    if st.session_state.result is not None and not st.session_state.tariff_applied:
+        if st.button("Impose Trump Tariff +25%"):
+            st.session_state.tariff_applied = True
+            st.experimental_rerun()
