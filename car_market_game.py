@@ -61,7 +61,7 @@ def generate_car_image(speed, aesthetics, reliability, efficiency, tech, price):
         "Content-Type": "application/json"
     }
     
-        prompt = f"A {'luxury' if price > 60000 else 'budget' if price < 25000 else 'mid-range'} car with a modern design and funky color palette.The car is designed to fit its price category: a sports car for luxury, an SUV for mid-range, and a small basic car for budget.  The car should be driving on a winding mountian road.  No text should appear on the image."
+    prompt = f"A {'luxury' if price > 60000 else 'budget' if price < 25000 else 'mid-range'} car with a modern design and funky color palette.The car is designed to fit its price category: a sports car for luxury, an SUV for mid-range, and a small basic car for budget.  The car should be driving on a winding mountian road.  No text should appear on the image."
     
     data = {
         "model": "dall-e-3",
