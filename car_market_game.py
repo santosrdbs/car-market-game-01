@@ -161,7 +161,7 @@ if st.sidebar.button("Simulate Market"):
     
     
 
-if 'result' in locals() and 'Profit' in result:
+
     st.markdown("""
         <style>
             .stButton>button {
@@ -173,7 +173,7 @@ if 'result' in locals() and 'Profit' in result:
             }
         </style>
     """, unsafe_allow_html=True)
-    if st.button("Impose Trump Tariff +25%"):
+    
         tariffed_cost = (speed * 2000) + (aesthetics * 1500) + (reliability * 1800) + (efficiency * 1700) + (tech * 2500)
         tariffed_cost *= 1.25  # Adding 25% tariff
         tariffed_profit = result['Estimated Sales'] * (price - tariffed_cost)
