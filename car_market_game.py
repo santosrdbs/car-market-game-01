@@ -82,13 +82,26 @@ def generate_car_image(speed, aesthetics, reliability, efficiency, tech, price):
         return f"Error: {response.status_code} - {response.text}"
 
 # Streamlit UI
-st.set_page_config(page_title="Business Administration Car Market Simulation Game", layout="centered")
+st.set_page_config(page_title="Business Administration Car Market Simulation Game", layout="centered", initial_sidebar_state="expanded")
+st.markdown("""
+    <style>
+        body {
+            background-color: white !important;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
 # Add logo in the top-left with spacing
 logo_path = "logo.png"  # Replace with the actual logo file path
-st.image(logo_path, width=150)
+col1, col2 = st.columns([1, 4])
+with col1:
+    st.image(logo_path, width=150)
+with col2:
+    st.markdown("""
+    <h1 style='margin-top: 20px;'>Business Administration Car Market Simulation Game</h1>
+    """, unsafe_allow_html=True)
 
-st.title("🚗 Business Administration Car Market Simulation Game")
+
 
 # Sidebar Inputs
 st.sidebar.header("Customize Your Car")
