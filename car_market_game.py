@@ -61,7 +61,7 @@ def generate_car_image(speed, aesthetics, reliability, efficiency, tech, price):
         "Content-Type": "application/json"
     }
     
-    prompt = f"A {'luxury' if price > 60000 else 'budget' if price < 25000 else 'mid-range'} futuristic full-body car priced at ${price}, with speed {speed}/10, aesthetics {aesthetics}/10, reliability {reliability}/10, fuel efficiency {efficiency}/10, and technology {tech}/10. The car should match its price range, appearing as a sedan for budget, an SUV for mid-range, and a sleek sports car for luxury. The background should be a futuristic cityscape with lighting that matches the car's style."
+    prompt = f"A {'luxury' if price > 60000 else 'budget' if price < 25000 else 'mid-range'} futuristic car with a sleek, aerodynamic body. The car is designed for its price range, with a {'sleek sports coupe' if price > 60000 else 'modern SUV' if price > 25000 else 'practical sedan'} aesthetic. It has bold lighting, high-tech details, and a unique, eye-catching color scheme. The background is a stunning futuristic cityscape, providing a dynamic and immersive feel."
     
     data = {
         "model": "dall-e-2",
