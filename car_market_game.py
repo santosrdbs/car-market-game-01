@@ -29,7 +29,8 @@ def simulate_market_performance(speed, aesthetics, reliability, efficiency, tech
     
     price_factor = max(0, 1 - abs(price - best_match["Avg_Price"]) / best_match["Avg_Price"])
     estimated_sales = int(best_match["Market_Size"] * (1 - best_match["Score"] / 50) * price_factor)
-    profit = estimated_sales * (price * 0.5)
+    cost = (speed * 2000) + (aesthetics * 1500) + (reliability * 1800) + (efficiency * 1700) + (tech * 2500)
+    profit = estimated_sales * (price - cost)
     
     return {
         "Best Market Segment": best_match["Segment"],
@@ -51,7 +52,7 @@ def generate_car_image(speed, aesthetics, reliability, efficiency, tech, price):
         "Content-Type": "application/json"
     }
     
-    prompt = f"A {'luxury' if price > 60000 else 'budget' if price < 25000 else 'mid-range'} futuristic car priced at ${price}, with speed {speed}/10, aesthetics {aesthetics}/10, reliability {reliability}/10, fuel efficiency {efficiency}/10, and technology {tech}/10. The car should match its price range and have a sleek, realistic design with appropriate features."
+    prompt = f"A {'luxury' if price > 60000 else 'budget' if price < 25000 else 'mid-range'} futuristic car priced at ${price}, with speed {speed}/10, aesthetics {aesthetics}/10, reliability {reliability}/10, fuel efficiency {efficiency}/10, and technology {tech}/10. The car should match its price range and have a sleek, realistic design with appropriate features. The background should be a cityscape, giving a modern and urban feel to the image."
     
     data = {
         
@@ -85,7 +86,7 @@ price = st.sidebar.number_input("Price ($)", min_value=10000, max_value=200000, 
 if st.sidebar.button("Simulate Market"):
     sim_message = st.empty()
     sim_message.write("🕒 Simulating...")
-    st.write("🕒 Simulating...")
+    
     result = simulate_market_performance(speed, aesthetics, reliability, efficiency, tech, price)
     
     
