@@ -62,8 +62,8 @@ def generate_car_image(speed, aesthetics, reliability, efficiency, tech):
     
     response = requests.post("https://api.openai.com/v1/images/generations", json=data, headers=headers)
     
-    st.write(f"🔍 API Response Status: {response.status_code}")
-    st.write(f"🔍 API Response Text: {response.text}")
+    
+    
     
     if response.status_code == 200:
         return response.json()["data"][0]["url"]
