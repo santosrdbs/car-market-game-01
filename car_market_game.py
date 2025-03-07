@@ -119,6 +119,17 @@ except Exception as e:
 # Improved CSS with better responsive layout and smaller start button
 st.markdown("""
     <style>
+    /* Fix for black background on mobile */
+    body {
+        background-color: #ffffff !important;
+    }
+    .main .block-container {
+        background-color: #ffffff !important;
+    }
+    .stApp {
+        background-color: #ffffff !important;
+    }
+    
     .custom-container {
         border: 2px solid #4CAF50;
         padding: 15px;
