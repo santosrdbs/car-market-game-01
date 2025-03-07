@@ -130,6 +130,23 @@ st.markdown("""
         background-color: #ffffff !important;
     }
     
+    /* Fix for text color visibility on mobile */
+    .stMarkdown, .stText, p, h1, h2, h3, h4, h5, h6, span, div, label {
+        color: #333333 !important;
+    }
+    /* Make sure sliders, inputs and other controls have visible text */
+    .stSlider label, .stNumberInput label, .stSelectbox label, .stButton label {
+        color: #333333 !important;
+    }
+    /* Make sure all input text is visible */
+    input, select, textarea {
+        color: #333333 !important;
+    }
+    /* Strong dark text for important elements */
+    strong, b {
+        color: #111111 !important;
+    }
+    
     .custom-container {
         border: 2px solid #4CAF50;
         padding: 15px;
