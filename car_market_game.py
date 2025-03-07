@@ -263,13 +263,14 @@ st.markdown("""
     }
     /* Smaller start button on desktop */
     .small-button {
-        max-width: 200px;
+        max-width: 150px;
         margin: 0 auto;
         display: block;
     }
     /* Button colors */
     .stButton button {
         font-weight: bold;
+        color: white !important;
     }
     /* Responsive design */
     @media (max-width: 768px) {
@@ -381,7 +382,7 @@ if st.session_state.game_state == "instructions":
     """, unsafe_allow_html=True)
     
     # Place the button in a container
-    start_button = st.button("Start Game", key="start_game_button", help="Click to start the game", type="primary")
+    start_button = st.button("Start Game", key="start_game_button", help="Click to start the game", type="primary", use_container_width=False)
     if start_button:
         st.session_state.game_state = "playing"
         st.session_state.attempts_used = 0
@@ -604,19 +605,14 @@ elif st.session_state.game_state == "playing" or st.session_state.game_state == 
                     col1, col2 = st.columns(2)
                     with col1:
                         if not st.session_state.tariff_applied:
-                            # Use custom HTML button instead of Streamlit button
-                            st.markdown("""
-                            <button 
-                                onclick="document.dispatchEvent(new CustomEvent('streamlit:componentReady', {detail: {apiVersion: 1, componentName: 'customButton'}})); 
-                                parent.window.postMessage({type: 'streamlit:setComponentValue', value: true, dataType: 'bool', key: 'apply_tariff'}, '*')"
-                                style="background-color: #FF5733; color: white; border: 1px solid #CC4422; 
-                                padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer; font-weight: bold; width: 100%;">
-                                Impose Trump Tariff +25%
-                            </button>
-                            """, unsafe_allow_html=True)
-                            
-                            # Hidden button to capture the event
-                            if st.button("", key="apply_tariff", label_visibility="collapsed"):
+                            # Go back to standard button but with bright styling
+                            tariff_button = st.button(
+                                "Impose Trump Tariff +25%", 
+                                key="apply_tariff",
+                                type="primary",
+                                use_container_width=True
+                            )
+                            if tariff_button:
                                 st.session_state.tariff_applied = True
                                 st.rerun()
                     
