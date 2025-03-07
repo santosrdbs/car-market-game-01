@@ -96,7 +96,7 @@ def generate_car_image(speed, aesthetics, reliability, efficiency, tech, price):
         }
         
         # Enhanced prompt to strongly prevent text in images
-        prompt = f"A {'sports car' if price > 80000 else 'luxury sedan' if price > 60000 else 'mid-range SUV' if price > 25000 and efficiency < 8 else 'eco-friendly SUV' if price > 25000 and efficiency >= 8 else 'eco-friendly compact' if price > 20000 and efficiency >= 8 else 'budget hatchback'} with a {'plain and basic' if aesthetics <= 3 else 'sleek and stylish' if aesthetics <= 7 else 'wild and extravagant'} design and funky color palette. The car should match its market segment: a high-performance sports car for extreme speed, a refined luxury sedan for premium comfort, a mid-range SUV for versatility, an eco-friendly SUV for sustainable family travel, an eco-friendly compact for maximum efficiency, or a budget hatchback for affordability. The car should be driving on a winding mountain road. The image should be a mix of comic/photorealistic and highly detailed. VERY IMPORTANT: DO NOT INCLUDE ANY TEXT, LETTERS, NUMBERS, WORDS, LABELS, WATERMARKS, LOGOS, OR SYMBOLS OF ANY KIND IN THE IMAGE."
+        prompt = f"A {'sports car' if price > 80000 else 'luxury sedan' if price > 60000 else 'mid-range SUV' if price > 25000 and efficiency < 8 else 'eco-friendly SUV' if price > 25000 and efficiency >= 8 else 'eco-friendly compact' if price > 20000 and efficiency >= 8 else 'budget hatchback'} with a {'plain and basic' if aesthetics <= 3 else 'sleek and stylish' if aesthetics <= 7 else 'wild and extravagant'} design and funky color palette. The car should match its market segment: a high-performance sports car for extreme speed, a refined luxury sedan for premium comfort, a mid-range SUV for versatility, an eco-friendly SUV for sustainable family travel, an eco-friendly compact for maximum efficiency, or a budget hatchback for affordability. The car should be driving on a winding mountain road. The image should be photorealistic and highly detailed. VERY IMPORTANT: DO NOT INCLUDE ANY TEXT, LETTERS, NUMBERS, WORDS, LABELS, WATERMARKS, LOGOS, OR SYMBOLS OF ANY KIND IN THE IMAGE."
         
         data = {
             "model": "dall-e-3",
@@ -631,18 +631,15 @@ elif st.session_state.game_state == "playing" or st.session_state.game_state == 
                     col1, col2 = st.columns(2)
                     with col1:
                         if not st.session_state.tariff_applied:
-                            # Go back to standard button but with bright styling
-                            with st.container():
-                                st.markdown('<div class="red-button">', unsafe_allow_html=True)
-                                tariff_button = st.button(
-                                    "Impose Trump Tariff +25%", 
-                                    key="apply_tariff",
-                                    type="secondary"
-                                )
-                                st.markdown('</div>', unsafe_allow_html=True)
-                                if tariff_button:
-                                    st.session_state.tariff_applied = True
-                                    st.rerun()
+                            # Fix for tariff button disappearing
+                            tariff_button = st.button(
+                                "Impose Trump Tariff +25%", 
+                                key="apply_tariff",
+                                type="secondary"
+                            )
+                            if tariff_button:
+                                st.session_state.tariff_applied = True
+                                st.rerun()
                                 st.session_state.tariff_applied = True
                                 st.rerun()
                     
