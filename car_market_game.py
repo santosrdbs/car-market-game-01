@@ -157,14 +157,26 @@ st.markdown("""
         background-color: #ffffff !important;
         color: #333333 !important;
     }
-    /* Fix Trump tariff button color scheme */
-    button[key="apply_tariff"], [data-testid="baseButton-secondary"][aria-label="Impose Trump Tariff +25%"] {
+    /* Fix Trump tariff button color scheme - more aggressive approach */
+    button[key="apply_tariff"],
+    [data-testid="baseButton-secondary"][aria-label="Impose Trump Tariff +25%"],
+    div:has(> button:contains("Impose Trump Tariff")),
+    button:contains("Trump Tariff"),
+    button:contains("Impose Trump"),
+    div:has(> span:contains("Impose Trump Tariff")) button {
         background-color: #FF5733 !important;
         color: white !important;
         border-color: #CC4422 !important;
+        opacity: 1 !important;
     }
-    /* Make sure all buttons have visible text */
-    button {
+    /* Override Streamlit button colors */
+    .stButton button {
+        color: white !important;
+    }
+    /* Make sure the tariff button text is always visible */
+    button:contains("Trump") span,
+    button:contains("Tariff") span,
+    div:has(> button:contains("Trump")) span {
         color: white !important;
     }
     /* Strong dark text for important elements */
@@ -592,7 +604,17 @@ elif st.session_state.game_state == "playing" or st.session_state.game_state == 
                     col1, col2 = st.columns(2)
                     with col1:
                         if not st.session_state.tariff_applied:
-                            if st.button("Impose Trump Tariff +25%", key="apply_tariff"):
+                            # Use a custom style for the Trump tariff button
+                            st.markdown("""
+                            <style>
+                            div[data-testid="stHorizontalBlock"] div[data-testid="column"]:first-child button {
+                                background-color: #FF5733 !important;
+                                color: white !important;
+                                border-color: #FF5733 !important;
+                            }
+                            </style>
+                            """, unsafe_allow_html=True)
+                            if st.button("Impose Trump Tariff +25%", key="apply_tariff", type="secondary"):
                                 st.session_state.tariff_applied = True
                                 st.rerun()
                     
