@@ -183,11 +183,13 @@ st.markdown("""
         border-radius: 5px;
         margin-bottom: 10px;
     }
-    .centered-header {
-        text-align: center;
+    .centered-header-container {
         max-width: 900px;
         margin-left: auto;
         margin-right: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     .centered-container {
         max-width: 900px;
@@ -239,19 +241,20 @@ def reset_game():
     st.session_state.attempts_results = []
     st.session_state.car_designs = []
 
-# Logo and header - using simpler layout for mobile
-st.markdown("<h1 class='centered-header'>Business Administration Car Market Simulation Game</h1>", unsafe_allow_html=True)
+# Logo and header in the same row
+logo_path = "logo.png"  # Replace with the actual logo file path
 
-try:
-    logo_path = "logo.png"  # Replace with the actual logo file path
-    col1, col2, col3 = st.columns([1, 3, 1])
-    with col1:
-        try:
-            st.image(logo_path, width=100)
-        except:
-            pass  # Skip if logo doesn't load
-except:
-    pass  # Continue without logo if columns fail
+# Create centered container for the header
+st.markdown('<div style="max-width: 900px; margin: 0 auto; padding: 10px;">', unsafe_allow_html=True)
+col1, col2 = st.columns([1, 5])
+with col1:
+    try:
+        st.image(logo_path, width=100)
+    except:
+        pass  # Skip if logo doesn't load
+with col2:
+    st.markdown("<h1 style='margin-top: 25px;'>Business Administration Car Market Simulation Game</h1>", unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
 
 # Instructions screen
 if st.session_state.game_state == "instructions":
