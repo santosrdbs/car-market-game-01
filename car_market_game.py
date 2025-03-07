@@ -640,6 +640,8 @@ elif st.session_state.game_state == "playing" or st.session_state.game_state == 
                                 )
                                 st.markdown('</div>', unsafe_allow_html=True)
                                 if tariff_button:
+                                    st.session_state.tariff_applied = True
+                                    st.rerun()
                                 st.session_state.tariff_applied = True
                                 st.rerun()
                     
