@@ -623,6 +623,7 @@ elif st.session_state.game_state == "playing" or st.session_state.game_state == 
                     <div style="background-color: #e6f7ff; padding: 15px; border-radius: 10px; border: 2px solid #1890ff; margin: 20px 0;">
                         <h3 style="color: #1890ff; margin-top: 0;">📚 Educational Note</h3>
                         <p>Taking courses at Coast Mountain College such as <strong>Introduction to Marketing</strong> and <strong>Business Finance</strong> would help you understand markets and how to price products accordingly!</p>
+                        <p>Interested in more information? Visit the <a href="https://coastmountaincollege.ca/programs/study/business" target="_blank">Coast Mountain College Business Administration website</a></p>
                     </div>
                     """, unsafe_allow_html=True)
                     
