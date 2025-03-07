@@ -33,7 +33,9 @@ def simulate_market_performance(speed, aesthetics, reliability, efficiency, tech
     profit = estimated_sales * (price - cost)
     
     feedback = ""
-    if profit < -10000000:
+    if estimated_sales == 0:
+        feedback = "🚨 No sales! Your price is too high for the options you've chosen. Try lowering your price or better matching your car's features to a market segment."
+    elif profit < -10000000:
         feedback = "🚨 Catastrophic Loss! Your car is losing an extreme amount of money. You need to **completely rethink** your strategy—reduce production costs, increase the price, and make sure your car matches the right market segment."
     elif profit < -1000000:
         feedback = "⚠️ Huge Loss! Your losses are very high. Consider making significant adjustments—lowering expensive features, improving efficiency, or adjusting pricing to better fit the market."
@@ -59,7 +61,10 @@ def simulate_market_performance(speed, aesthetics, reliability, efficiency, tech
     }
 
 # Function to generate feedback for a profit amount
-def get_feedback_for_profit(profit):
+def get_feedback_for_profit(profit, sales=None):
+    if sales == 0 or sales is not None and sales < 10:
+        return "🚨 No sales! Your price is too high for the options you've chosen. Try lowering your price or better matching your car's features to a market segment."
+    
     if profit < -10000000:
         return "🚨 Catastrophic Loss! Your car is losing an extreme amount of money. You need to **completely rethink** your strategy—reduce production costs, increase the price, and make sure your car matches the right market segment."
     elif profit < -1000000:
@@ -151,6 +156,11 @@ st.markdown("""
     .css-qrbaxs, .css-zt5igj, input[type="number"], .stNumberInput div[data-baseweb="input"] {
         background-color: #ffffff !important;
         color: #333333 !important;
+    }
+    /* Fix Trump tariff button color scheme */
+    button[key="apply_tariff"] {
+        background-color: #FF5733 !important;
+        color: white !important;
     }
     /* Strong dark text for important elements */
     strong, b {
@@ -498,7 +508,7 @@ elif st.session_state.game_state == "playing" or st.session_state.game_state == 
                     tariffed_cost = st.session_state.result['Cost'] * 1.25  # Adding 25% tariff
                     latest_design = st.session_state.car_designs[-1]
                     tariffed_profit = st.session_state.result['Estimated Sales'] * (latest_design['Price'] - tariffed_cost)
-                    tariffed_feedback = get_feedback_for_profit(tariffed_profit)
+                    tariffed_feedback = get_feedback_for_profit(tariffed_profit, st.session_state.result['Estimated Sales'])
                     
                     st.markdown(f"""
                     <div class="custom-container-tariff">
