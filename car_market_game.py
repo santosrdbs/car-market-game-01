@@ -116,7 +116,7 @@ except Exception as e:
     # This means the page config was already set, which is fine
     pass
 
-# Simplified CSS with inline styles to avoid JavaScript dependencies
+# Improved CSS with better responsive layout and smaller start button
 st.markdown("""
     <style>
     .custom-container {
@@ -196,6 +196,12 @@ st.markdown("""
         margin-left: auto;
         margin-right: auto;
     }
+    /* Smaller start button on desktop */
+    .small-button {
+        max-width: 200px;
+        margin: 0 auto;
+        display: block;
+    }
     /* Button colors */
     .stButton button {
         font-weight: bold;
@@ -210,6 +216,32 @@ st.markdown("""
         }
         .stButton button {
             width: 100%;
+        }
+        .small-button {
+            max-width: 100%;
+        }
+    }
+    /* Improve settings and results layout */
+    .settings-panel {
+        background-color: #f9f9f9;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 15px;
+    }
+    .results-panel {
+        margin-top: 20px;
+    }
+    .sidebar-placeholder {
+        display: none;
+    }
+    @media (min-width: 992px) {
+        .sidebar-placeholder {
+            display: block;
+            width: 100%;
+            height: 1px;
+        }
+        .results-container {
+            padding-left: 20px;
         }
     }
     </style>
@@ -276,8 +308,16 @@ if st.session_state.game_state == "instructions":
     </div>
     """, unsafe_allow_html=True)
     
-    # Simple Streamlit button
-    if st.button("Start Game", key="start_game_button", help="Click to start the game", type="primary"):
+    # Use custom CSS class for smaller button
+    st.markdown("""
+    <div class="small-button">
+        <div id="start-button-container"></div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Place the button in a container
+    start_button = st.button("Start Game", key="start_game_button", help="Click to start the game", type="primary")
+    if start_button:
         st.session_state.game_state = "playing"
         st.session_state.attempts_used = 0
         st.session_state.attempts_results = []
@@ -286,15 +326,18 @@ if st.session_state.game_state == "instructions":
 
 # Playing the game or game over state
 elif st.session_state.game_state == "playing" or st.session_state.game_state == "game_over":
-    # Main layout with sidebar for inputs
-    with st.sidebar:
+    # Use a two-column layout for the main game interface
+    main_col1, main_col2 = st.columns([1, 2])
+    
+    # Left column for car design controls
+    with main_col1:
         st.markdown(f"""
         <div class="attempt-counter">
             Attempt {st.session_state.attempts_used + 1} of 3
         </div>
         """, unsafe_allow_html=True)
         
-        # Show previous attempts in sidebar
+        # Show previous attempts 
         if len(st.session_state.attempts_results) > 0:
             st.markdown("### Previous Attempts")
             for i, (design, result) in enumerate(zip(st.session_state.car_designs, st.session_state.attempts_results)):
@@ -305,7 +348,7 @@ elif st.session_state.game_state == "playing" or st.session_state.game_state == 
                             f"Reliability: {design['Reliability']}, Efficiency: {design['Efficiency']}, " +
                             f"Tech: {design['Tech']}, Price: ${design['Price']:,}")
         
-        # Design inputs in sidebar
+        # Design inputs
         st.markdown("### Customize Your Car")
         
         # If we have previous attempts, use the best one as a starting point
@@ -331,164 +374,183 @@ elif st.session_state.game_state == "playing" or st.session_state.game_state == 
         
         disabled = st.session_state.game_state == "game_over"
         
-        speed = st.slider("Speed", 1, 10, default_speed, disabled=disabled, 
-                         help="Higher speed increases cost but appeals to Sports segment")
-        aesthetics = st.slider("Aesthetics", 1, 10, default_aesthetics, disabled=disabled,
-                             help="Higher aesthetics increases cost but appeals to Luxury segment")
-        reliability = st.slider("Reliability", 1, 10, default_reliability, disabled=disabled,
-                              help="Higher reliability increases cost but appeals to Budget segment")
-        efficiency = st.slider("Fuel Efficiency", 1, 10, default_efficiency, disabled=disabled,
-                             help="Higher efficiency increases cost but appeals to Eco-Friendly segment")
-        tech = st.slider("Technology", 1, 10, default_tech, disabled=disabled,
-                       help="Higher tech increases cost but appeals to Luxury & Sports segments")
-        price = st.number_input("Price ($)", min_value=10000, max_value=200000, value=default_price, step=1000, disabled=disabled)
-        
-        # Simulate market button (only show during playing state)
-        if st.session_state.game_state == "playing" and st.button("Simulate Market", type="primary"):
-            with st.spinner("Simulating market performance..."):
-                # Reset tariff state when simulating new market
-                st.session_state.tariff_applied = False
-                
-                # Store design for future reference
-                st.session_state.car_designs.append({
-                    "Speed": speed,
-                    "Aesthetics": aesthetics, 
-                    "Reliability": reliability,
-                    "Efficiency": efficiency,
-                    "Tech": tech,
-                    "Price": price
-                })
-                
-                # Simulate market
-                st.session_state.result = simulate_market_performance(speed, aesthetics, reliability, efficiency, tech, price)
-                st.session_state.attempts_results.append(st.session_state.result)
-                st.session_state.attempts_used += 1
-                
-                # Generate AI image only on final attempt
-                if st.session_state.attempts_used >= 3:
-                    st.session_state.car_image_url = generate_car_image(speed, aesthetics, reliability, efficiency, tech, price)
-                    st.session_state.game_state = "game_over"
-                
-                st.rerun()
-    
-    # Main content area
-    # Display results if we have them
-    if st.session_state.result is not None:
-        try:
-            # Display car image only on final attempt if available
-            if st.session_state.game_state == "game_over" and st.session_state.car_image_url and "Error" not in st.session_state.car_image_url:
-                try:
-                    st.image(st.session_state.car_image_url, use_container_width=True)
-                except:
-                    st.write("Unable to display car image")
+        with st.container():
+            st.markdown('<div class="settings-panel">', unsafe_allow_html=True)
+            speed = st.slider("Speed", 1, 10, default_speed, disabled=disabled, 
+                             help="Higher speed increases cost but appeals to Sports segment")
+            aesthetics = st.slider("Aesthetics", 1, 10, default_aesthetics, disabled=disabled,
+                                 help="Higher aesthetics increases cost but appeals to Luxury segment")
+            reliability = st.slider("Reliability", 1, 10, default_reliability, disabled=disabled,
+                                  help="Higher reliability increases cost but appeals to Budget segment")
+            efficiency = st.slider("Fuel Efficiency", 1, 10, default_efficiency, disabled=disabled,
+                                 help="Higher efficiency increases cost but appeals to Eco-Friendly segment")
+            tech = st.slider("Technology", 1, 10, default_tech, disabled=disabled,
+                           help="Higher tech increases cost but appeals to Luxury & Sports segments")
+            price = st.number_input("Price ($)", min_value=10000, max_value=200000, value=default_price, step=1000, disabled=disabled)
+            st.markdown('</div>', unsafe_allow_html=True)
             
-            # Show attempts left or final status
+            # Simulate market button (only show during playing state)
             if st.session_state.game_state == "playing":
-                attempts_left = 3 - st.session_state.attempts_used
-                st.markdown(f"<div class='attempt-counter'>You have {attempts_left} attempt{'s' if attempts_left != 1 else ''} left</div>", unsafe_allow_html=True)
-            else:
-                st.markdown("<div class='attempt-counter'>Final Result</div>", unsafe_allow_html=True)
-            
-            # Display results
-            result = st.session_state.result
-            st.markdown(f"""
-            <div class="custom-container">
-                <h2 class="header-green">📊 Market Simulation Results</h2>
-                <p><strong>Best Market Segment:</strong> {result['Best Market Segment']}</p>
-                <p><strong>Estimated Sales:</strong> {result['Estimated Sales']} units</p>
-                <p><strong>Estimated Profit:</strong> ${result['Profit']:,}</p>
-                <div class="section-divider">
-                    <h3 class="header-orange">💡 Profit Feedback</h3>
-                    <p>{result['Feedback']}</p>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            # Display tariff information if it has been applied
-            if st.session_state.tariff_applied:
-                tariffed_cost = st.session_state.result['Cost'] * 1.25  # Adding 25% tariff
-                latest_design = st.session_state.car_designs[-1]
-                tariffed_profit = st.session_state.result['Estimated Sales'] * (latest_design['Price'] - tariffed_cost)
-                tariffed_feedback = get_feedback_for_profit(tariffed_profit)
+                sim_button = st.button("Simulate Market", type="primary")
+                if sim_button:
+                    with st.spinner("Simulating market performance..."):
+                        # Reset tariff state when simulating new market
+                        st.session_state.tariff_applied = False
+                        
+                        # Store design for future reference
+                        st.session_state.car_designs.append({
+                            "Speed": speed,
+                            "Aesthetics": aesthetics, 
+                            "Reliability": reliability,
+                            "Efficiency": efficiency,
+                            "Tech": tech,
+                            "Price": price
+                        })
+                        
+                        # Simulate market
+                        st.session_state.result = simulate_market_performance(speed, aesthetics, reliability, efficiency, tech, price)
+                        st.session_state.attempts_results.append(st.session_state.result)
+                        st.session_state.attempts_used += 1
+                        
+                        # Generate AI image only on final attempt
+                        if st.session_state.attempts_used >= 3:
+                            st.session_state.car_image_url = generate_car_image(speed, aesthetics, reliability, efficiency, tech, price)
+                            st.session_state.game_state = "game_over"
+                        
+                        st.rerun()
+    
+    # Right column for results display
+    with main_col2:
+        st.markdown('<div class="results-panel">', unsafe_allow_html=True)
+        
+        # Display results if we have them
+        if st.session_state.result is not None:
+            try:
+                # Display car image only on final attempt if available
+                if st.session_state.game_state == "game_over" and st.session_state.car_image_url and "Error" not in st.session_state.car_image_url:
+                    try:
+                        st.image(st.session_state.car_image_url, use_container_width=True)
+                    except:
+                        st.write("Unable to display car image")
                 
+                # Show attempts left or final status
+                if st.session_state.game_state == "playing":
+                    attempts_left = 3 - st.session_state.attempts_used
+                    st.markdown(f"<div class='attempt-counter'>You have {attempts_left} attempt{'s' if attempts_left != 1 else ''} left</div>", unsafe_allow_html=True)
+                else:
+                    st.markdown("<div class='attempt-counter'>Final Result</div>", unsafe_allow_html=True)
+                
+                # Display results
+                result = st.session_state.result
                 st.markdown(f"""
-                <div class="custom-container-tariff">
-                    <h2 class="header-orange">📊 Updated Market Results (After Tariff)</h2>
-                    <p><strong>Best Market Segment:</strong> {st.session_state.result['Best Market Segment']}</p>
-                    <p><strong>Estimated Sales:</strong> {st.session_state.result['Estimated Sales']} units</p>
-                    <p><strong>Original Profit:</strong> ${st.session_state.result['Profit']:,}</p>
-                    <p><strong>New Estimated Profit:</strong> ${tariffed_profit:,.2f}</p>
-                    <p><strong>Profit Change:</strong> ${tariffed_profit - st.session_state.result['Profit']:,.2f}</p>
+                <div class="custom-container">
+                    <h2 class="header-green">📊 Market Simulation Results</h2>
+                    <p><strong>Best Market Segment:</strong> {result['Best Market Segment']}</p>
+                    <p><strong>Estimated Sales:</strong> {result['Estimated Sales']} units</p>
+                    <p><strong>Estimated Profit:</strong> ${result['Profit']:,}</p>
                     <div class="section-divider">
-                        <h3 class="header-orange">💡 Updated Profit Feedback</h3>
-                        <p>{tariffed_feedback}</p>
+                        <h3 class="header-orange">💡 Profit Feedback</h3>
+                        <p>{result['Feedback']}</p>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
-            
-            # Game over summary at the end
-            if st.session_state.game_state == "game_over":
-                # Calculate best attempt
-                profits = [result['Profit'] for result in st.session_state.attempts_results]
-                best_attempt_index = profits.index(max(profits))
-                best_attempt = st.session_state.attempts_results[best_attempt_index]
-                best_design = st.session_state.car_designs[best_attempt_index]
                 
-                st.markdown("""
-                <div class="section-divider"></div>
-                <h2 style="text-align: center; margin-top: 20px;">Game Summary</h2>
-                """, unsafe_allow_html=True)
+                # Display tariff information if it has been applied
+                if st.session_state.tariff_applied:
+                    tariffed_cost = st.session_state.result['Cost'] * 1.25  # Adding 25% tariff
+                    latest_design = st.session_state.car_designs[-1]
+                    tariffed_profit = st.session_state.result['Estimated Sales'] * (latest_design['Price'] - tariffed_cost)
+                    tariffed_feedback = get_feedback_for_profit(tariffed_profit)
+                    
+                    st.markdown(f"""
+                    <div class="custom-container-tariff">
+                        <h2 class="header-orange">📊 Updated Market Results (After Tariff)</h2>
+                        <p><strong>Best Market Segment:</strong> {st.session_state.result['Best Market Segment']}</p>
+                        <p><strong>Estimated Sales:</strong> {st.session_state.result['Estimated Sales']} units</p>
+                        <p><strong>Original Profit:</strong> ${st.session_state.result['Profit']:,}</p>
+                        <p><strong>New Estimated Profit:</strong> ${tariffed_profit:,.2f}</p>
+                        <p><strong>Profit Change:</strong> ${tariffed_profit - st.session_state.result['Profit']:,.2f}</p>
+                        <div class="section-divider">
+                            <h3 class="header-orange">💡 Updated Profit Feedback</h3>
+                            <p>{tariffed_feedback}</p>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
                 
-                # Best design callout
-                st.markdown(f"""
-                <div style="background-color: #e8f4f8; padding: 15px; border-radius: 10px; border: 2px solid #3498db; margin-bottom: 20px; max-width: 900px; margin-left: auto; margin-right: auto;">
-                    <h3 style="color: #3498db; text-align: center;">🏆 Best Performing Design: Attempt {best_attempt_index+1}</h3>
-                    <p><strong>Profit:</strong> ${best_attempt['Profit']:,}</p>
-                    <p><strong>Market Segment:</strong> {best_attempt['Best Market Segment']}</p>
-                    <p><strong>Settings:</strong> Speed: {best_design['Speed']}, Aesthetics: {best_design['Aesthetics']}, 
-                    Reliability: {best_design['Reliability']}, Efficiency: {best_design['Efficiency']}, 
-                    Tech: {best_design['Tech']}, Price: ${best_design['Price']:,}</p>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                # Create a DataFrame for the summary
-                import pandas as pd
-                summary_data = []
-                for i, (design, result) in enumerate(zip(st.session_state.car_designs, st.session_state.attempts_results)):
-                    is_best = i == best_attempt_index
-                    best_badge = "🏆 " if is_best else ""
-                    summary_data.append({
-                        "Attempt": f"{best_badge}Attempt {i+1}",
-                        "Market Segment": result['Best Market Segment'],
-                        "Sales": result['Estimated Sales'],
-                        "Profit": f"${result['Profit']:,}",
-                        "Speed": design['Speed'],
-                        "Aesthetics": design['Aesthetics'],
-                        "Reliability": design['Reliability'],
-                        "Efficiency": design['Efficiency'],
-                        "Tech": design['Tech'],
-                        "Price": f"${design['Price']:,}"
-                    })
-                
-                summary_df = pd.DataFrame(summary_data)
-                
-                # Display the summary table
-                st.markdown("### All Attempts Comparison")
-                st.dataframe(summary_df, use_container_width=True)
-                
-                # Tariff button after 3rd attempt if not already applied
-                col1, col2 = st.columns(2)
-                with col1:
-                    if not st.session_state.tariff_applied:
-                        if st.button("Impose Trump Tariff +25%", key="apply_tariff"):
-                            st.session_state.tariff_applied = True
+                # Game over summary at the end
+                if st.session_state.game_state == "game_over":
+                    # Calculate best attempt
+                    profits = [result['Profit'] for result in st.session_state.attempts_results]
+                    best_attempt_index = profits.index(max(profits))
+                    best_attempt = st.session_state.attempts_results[best_attempt_index]
+                    best_design = st.session_state.car_designs[best_attempt_index]
+                    
+                    st.markdown("""
+                    <div class="section-divider"></div>
+                    <h2 style="text-align: center; margin-top: 20px;">Game Summary</h2>
+                    """, unsafe_allow_html=True)
+                    
+                    # Best design callout
+                    st.markdown(f"""
+                    <div style="background-color: #e8f4f8; padding: 15px; border-radius: 10px; border: 2px solid #3498db; margin-bottom: 20px;">
+                        <h3 style="color: #3498db; text-align: center;">🏆 Best Performing Design: Attempt {best_attempt_index+1}</h3>
+                        <p><strong>Profit:</strong> ${best_attempt['Profit']:,}</p>
+                        <p><strong>Market Segment:</strong> {best_attempt['Best Market Segment']}</p>
+                        <p><strong>Settings:</strong> Speed: {best_design['Speed']}, Aesthetics: {best_design['Aesthetics']}, 
+                        Reliability: {best_design['Reliability']}, Efficiency: {best_design['Efficiency']}, 
+                        Tech: {best_design['Tech']}, Price: ${best_design['Price']:,}</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    # Create a DataFrame for the summary
+                    import pandas as pd
+                    summary_data = []
+                    for i, (design, result) in enumerate(zip(st.session_state.car_designs, st.session_state.attempts_results)):
+                        is_best = i == best_attempt_index
+                        best_badge = "🏆 " if is_best else ""
+                        summary_data.append({
+                            "Attempt": f"{best_badge}Attempt {i+1}",
+                            "Market Segment": result['Best Market Segment'],
+                            "Sales": result['Estimated Sales'],
+                            "Profit": f"${result['Profit']:,}",
+                            "Speed": design['Speed'],
+                            "Aesthetics": design['Aesthetics'],
+                            "Reliability": design['Reliability'],
+                            "Efficiency": design['Efficiency'],
+                            "Tech": design['Tech'],
+                            "Price": f"${design['Price']:,}"
+                        })
+                    
+                    summary_df = pd.DataFrame(summary_data)
+                    
+                    # Display the summary table
+                    st.markdown("### All Attempts Comparison")
+                    st.dataframe(summary_df, use_container_width=True)
+                    
+                    # Tariff button after 3rd attempt if not already applied
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        if not st.session_state.tariff_applied:
+                            if st.button("Impose Trump Tariff +25%", key="apply_tariff"):
+                                st.session_state.tariff_applied = True
+                                st.rerun()
+                    
+                    with col2:
+                        # New game button
+                        if st.button("Start New Game", key="new_game_button", type="primary"):
+                            reset_game()
                             st.rerun()
-                
-                with col2:
-                    # New game button
-                    if st.button("Start New Game", key="new_game_button", type="primary"):
-                        reset_game()
-                        st.rerun()
+            
+            except Exception as e:
+                st.error(f"Error displaying results: {str(e)}")
         
-        except Exception as e:
-            st.error(f"Error displaying results: {str(e)}")
+        # Show a placeholder message if no results to display yet
+        else:
+            st.markdown("""
+            <div style="text-align: center; padding: 30px; background-color: #f5f5f5; border-radius: 10px;">
+                <h3>Your results will appear here</h3>
+                <p>Adjust the car settings on the left and click "Simulate Market" to see how your design performs.</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+        st.markdown('</div>', unsafe_allow_html=True)
