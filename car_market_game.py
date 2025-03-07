@@ -158,8 +158,13 @@ st.markdown("""
         color: #333333 !important;
     }
     /* Fix Trump tariff button color scheme */
-    button[key="apply_tariff"] {
+    button[key="apply_tariff"], [data-testid="baseButton-secondary"][aria-label="Impose Trump Tariff +25%"] {
         background-color: #FF5733 !important;
+        color: white !important;
+        border-color: #CC4422 !important;
+    }
+    /* Make sure all buttons have visible text */
+    button {
         color: white !important;
     }
     /* Strong dark text for important elements */
@@ -574,6 +579,14 @@ elif st.session_state.game_state == "playing" or st.session_state.game_state == 
                     # Display the summary table
                     st.markdown("### All Attempts Comparison")
                     st.dataframe(summary_df, use_container_width=True)
+                    
+                    # Educational message about relevant courses
+                    st.markdown("""
+                    <div style="background-color: #e6f7ff; padding: 15px; border-radius: 10px; border: 2px solid #1890ff; margin: 20px 0;">
+                        <h3 style="color: #1890ff; margin-top: 0;">📚 Educational Note</h3>
+                        <p>Taking courses at Coast Mountain College such as <strong>Introduction to Marketing</strong> and <strong>Business Finance</strong> would help you understand markets and how to price products accordingly!</p>
+                    </div>
+                    """, unsafe_allow_html=True)
                     
                     # Tariff button after 3rd attempt if not already applied
                     col1, col2 = st.columns(2)
