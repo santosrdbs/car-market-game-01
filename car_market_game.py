@@ -142,6 +142,16 @@ st.markdown("""
     input, select, textarea {
         color: #333333 !important;
     }
+    /* Specifically fix the price input field */
+    .stNumberInput input, .stNumberInput .css-qrbaxs {
+        color: #333333 !important;
+        background-color: #ffffff !important;
+    }
+    /* Fix for any input field background colors */
+    .css-qrbaxs, .css-zt5igj, input[type="number"], .stNumberInput div[data-baseweb="input"] {
+        background-color: #ffffff !important;
+        color: #333333 !important;
+    }
     /* Strong dark text for important elements */
     strong, b {
         color: #111111 !important;
