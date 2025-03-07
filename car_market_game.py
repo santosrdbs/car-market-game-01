@@ -261,15 +261,43 @@ st.markdown("""
         margin-left: auto;
         margin-right: auto;
     }
-    /* Smaller start button on desktop */
+    /* Significantly smaller start button on desktop with manual size control */
     .small-button {
-        max-width: 150px;
-        margin: 0 auto;
-        display: block;
+        max-width: 120px !important;
+        margin: 0 auto !important;
+        display: block !important;
+    }
+    .small-button button {
+        width: 120px !important;
+        min-width: unset !important;
+        max-width: 120px !important;
+    }
+    /* Override Streamlit default button expansion */
+    div[data-testid="stButton"] {
+        width: auto !important;
     }
     /* Button colors */
     .stButton button {
         font-weight: bold;
+        color: white !important;
+    }
+    /* Primary buttons should always have white text */
+    button[kind="primary"], 
+    .stButton button[data-baseweb="button"][kind="primary"],
+    [data-testid="baseButton-primary"] {
+        color: white !important;
+    }
+    /* Red warning buttons */
+    button[kind="secondary"], 
+    .stButton button[data-baseweb="button"][kind="secondary"],
+    [data-testid="baseButton-secondary"] {
+        background-color: #FF5733 !important;
+        border-color: #FF5733 !important;
+        color: white !important;
+    }
+    .red-button button {
+        background-color: #FF5733 !important;
+        border-color: #FF5733 !important;
         color: white !important;
     }
     /* Responsive design */
@@ -374,15 +402,12 @@ if st.session_state.game_state == "instructions":
     </div>
     """, unsafe_allow_html=True)
     
-    # Use custom CSS class for smaller button
-    st.markdown("""
-    <div class="small-button">
-        <div id="start-button-container"></div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Place the button in a container
-    start_button = st.button("Start Game", key="start_game_button", help="Click to start the game", type="primary", use_container_width=False)
+    # Using a more aggressive approach with columns to constrain button width
+    col1, col2, col3 = st.columns([1, 1, 1])
+    with col2:
+        st.markdown('<div style="width: 120px; margin: 0 auto;">', unsafe_allow_html=True)
+        start_button = st.button("Start Game", key="start_game_button", help="Click to start the game", type="primary")
+        st.markdown('</div>', unsafe_allow_html=True)
     if start_button:
         st.session_state.game_state = "playing"
         st.session_state.attempts_used = 0
@@ -606,13 +631,15 @@ elif st.session_state.game_state == "playing" or st.session_state.game_state == 
                     with col1:
                         if not st.session_state.tariff_applied:
                             # Go back to standard button but with bright styling
-                            tariff_button = st.button(
-                                "Impose Trump Tariff +25%", 
-                                key="apply_tariff",
-                                type="primary",
-                                use_container_width=True
-                            )
-                            if tariff_button:
+                            with st.container():
+                                st.markdown('<div class="red-button">', unsafe_allow_html=True)
+                                tariff_button = st.button(
+                                    "Impose Trump Tariff +25%", 
+                                    key="apply_tariff",
+                                    type="secondary"
+                                )
+                                st.markdown('</div>', unsafe_allow_html=True)
+                                if tariff_button:
                                 st.session_state.tariff_applied = True
                                 st.rerun()
                     
