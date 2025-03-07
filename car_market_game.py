@@ -604,17 +604,19 @@ elif st.session_state.game_state == "playing" or st.session_state.game_state == 
                     col1, col2 = st.columns(2)
                     with col1:
                         if not st.session_state.tariff_applied:
-                            # Use a custom style for the Trump tariff button
+                            # Use custom HTML button instead of Streamlit button
                             st.markdown("""
-                            <style>
-                            div[data-testid="stHorizontalBlock"] div[data-testid="column"]:first-child button {
-                                background-color: #FF5733 !important;
-                                color: white !important;
-                                border-color: #FF5733 !important;
-                            }
-                            </style>
+                            <button 
+                                onclick="document.dispatchEvent(new CustomEvent('streamlit:componentReady', {detail: {apiVersion: 1, componentName: 'customButton'}})); 
+                                parent.window.postMessage({type: 'streamlit:setComponentValue', value: true, dataType: 'bool', key: 'apply_tariff'}, '*')"
+                                style="background-color: #FF5733; color: white; border: 1px solid #CC4422; 
+                                padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer; font-weight: bold; width: 100%;">
+                                Impose Trump Tariff +25%
+                            </button>
                             """, unsafe_allow_html=True)
-                            if st.button("Impose Trump Tariff +25%", key="apply_tariff", type="secondary"):
+                            
+                            # Hidden button to capture the event
+                            if st.button("", key="apply_tariff", label_visibility="collapsed"):
                                 st.session_state.tariff_applied = True
                                 st.rerun()
                     
